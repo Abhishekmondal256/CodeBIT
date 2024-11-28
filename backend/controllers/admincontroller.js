@@ -1,5 +1,7 @@
 const StudentSchema=require("../models/StudentSchema");
 const CreateHackathonSchema =require("../models/CreateHackathonSchema");
+const StudentRegisterSchema=require("../models/StudentRegisterSchema");
+const FormHackathon=require("../models/FormHackathon");
 const registerMain = async(req, res) => {
     const { collegeRollNumber, email } = req.body; // Extract user data from the request body
     if (!collegeRollNumber|| !email) {
@@ -134,10 +136,125 @@ const hackathonCreate = async (req, res) => {
     }
 };
 
+const getThemes=async(req,res)=>{
+  
+    try {
+      const { id } = req.params;
+       
+      // Validate ObjectId
+      
+
+      const hackathon = await CreateHackathonSchema.findById(id);
+      if (!hackathon) {
+          return res.status(404).json({ message: "Hackathon not found" });
+      }
+
+      res.status(200).json({ themes: hackathon.themes });
+  
+} 
+catch (error) {
+  console.error("Error fetching hackathon themes:", error);
+  res.status(500).json({ message: "Server error" });
+}
 
 
 
+}
+
+
+  
+  const teamRegister = async (req, res) => {
+      try {
+          // Extract the hackathon ID from route parameters
+          
+          const { id} = req.params;
+        
+          // Extract the team registration data from the request body
+          const {
+              teamName,
+              teamLeader,
+              teamMembers,
+              selectedProblem,
+              projectDescription,
+          } = req.body;
+         
+          // Validate the required fields
+          if (!teamName || !teamLeader || !teamLeader.email || !selectedProblem) {
+              return res.status(400).json({ error: 'Missing required fields.' });
+          }
+  
+          // Verify the hackathon exists in the CreateHackathon collection
+          const hackathon = await CreateHackathonSchema.findById({_id:id});
+          
+          if (!hackathon) {
+              return res.status(404).json({ error: 'Hackathon not found.' });
+          }
+  
+          // Ensure the team leader email is unique
+          const existingTeam = await FormHackathon.findOne({ 'teamLeader.email': teamLeader.email });
+          // console.log(existingTeam);
+          if (existingTeam) {
+              return res.status(409).json({ error: 'Team leader email is already registered.' });
+          }
+  
+          // Ensure no duplicate member emails
+          for (const member of teamMembers) {
+              const existingMember = await FormHackathon.findOne({ 'teamMembers.email': member.email });
+              if (existingMember) {
+                  return res.status(409).json({ error: `Team member email ${member.email} is already registered.` });
+              }
+          }
+  
+          // Create a new FormHackathon document
+          const newTeam = new FormHackathon({
+              hackathon: id,
+              teamName,
+              teamLeader,
+              teamMembers,
+              selectedProblem,
+              projectDescription,
+          });
+            console.log(newTeam);
+            console.log("ab hoga");
+          // Save the new team document
+          const savedTeam = await newTeam.save();
+           console.log(savedTeam);
+          // Respond with success
+          return res.status(201).json({
+              message: 'Team registered successfully.',
+              team: savedTeam,
+          });
+      } catch (error) {
+          console.error('Error during team registration:', error);
+          return res.status(500).json({ error: 'Internal Server Error.' });
+      }
+  };
+  
+
+  
+
+
+
+
+
+const getCurrentUser=async(req,res)=>{
+  const userEmail = req.user.email; // Assuming email is in req.user
+  try {
+      const user = await StudentRegisterSchema.findOne({ email: userEmail });
+      if (!user) {
+          return res.status(404).json({ error: 'User not found' });
+      }
+      return res.status(200).json(user); // Send back user details
+  } catch (error) {
+      console.error("Error fetching current user:", error);
+      return res.status(500).json({ error: 'Server error' });
+  }
+
+}
 module.exports = {
   registerMain,
-  hackathonCreate
+  hackathonCreate,
+  getThemes,
+  teamRegister,
+  getCurrentUser
 };

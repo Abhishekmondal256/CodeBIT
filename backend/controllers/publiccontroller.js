@@ -111,8 +111,10 @@ const showHackathons=async(req,res)=>{
 
 
 }
+
 module.exports = {
   registerStudent,
   loginUser,
   showHackathons
+ 
 };

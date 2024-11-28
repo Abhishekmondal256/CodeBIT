@@ -3,8 +3,6 @@ const router= express.Router();
 const StudentRegisterSchema=require("../models/StudentRegisterSchema");
 const Token=require("../models/token");
 const {loginUser,showHackathons,registerStudent}=require("../controllers/publiccontroller");
-
-
 router.post("/registerstudent",registerStudent);
 router.post("/login/:userType",loginUser);
 router.get("/hackathons",showHackathons);

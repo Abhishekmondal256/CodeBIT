@@ -1,8 +1,13 @@
-
 const mongoose = require('mongoose');
+const CreateHackathonSchema = require("./CreateHackathonSchema") // Make sure the path to your CreateHackathon model is correct
 
 // Define the schema for hackathon team registration
 const formHackathonSchema = new mongoose.Schema({
+  hackathon: { // Add reference to the CreateHackathon document
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'CreateHackathonSchema', // Reference the CreateHackathon model
+    required: true, // Hackathon reference is required
+  },
   teamName: {
     type: String,
     required: true, // Team name is required
@@ -43,17 +48,13 @@ const formHackathonSchema = new mongoose.Schema({
     type: String,
     required: true, // Selected problem is required
   },
-  projectDescription: {
-    type: String,
-    required: true, // Project description is required
-  },
+
   createdAt: {
     type: Date,
     default: Date.now, // Automatically set the creation date
   },
 });
 
-// Create a model based on the schema
 const FormHackathon = mongoose.model('FormHackathon', formHackathonSchema);
 
 module.exports = FormHackathon;
