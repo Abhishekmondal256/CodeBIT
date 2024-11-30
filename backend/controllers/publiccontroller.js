@@ -51,7 +51,7 @@ const registerStudent = async (req, res) => {
         const url=`${process.env.BASE_URL}users/${savedStudent._id}/verify/${token.token}`;
        
        const p= await sendEmail(savedStudent.email,"Verify Email",url);
-       console.log(p);
+       
     res.status(201).json({
       message: "An Email sent to your account please verify",
       student: savedStudent,
@@ -116,7 +116,7 @@ const showHackathons=async(req,res)=>{
 const showContest=async(req,res)=>{
 try{
 const contests=await CreateContestSchema.find().sort({'startTime':-1});
-console.log(contests);
+
 res.json(contests);
 
 

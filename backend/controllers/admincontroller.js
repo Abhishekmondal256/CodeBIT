@@ -217,11 +217,10 @@ catch (error) {
               selectedProblem,
               projectDescription,
           });
-            console.log(newTeam);
-            console.log("ab hoga");
+           
           // Save the new team document
           const savedTeam = await newTeam.save();
-           console.log(savedTeam);
+     
           // Respond with success
           return res.status(201).json({
               message: 'Team registered successfully.',
@@ -260,15 +259,10 @@ const projectSubmit=async(req,res)=>{
         teamMembers } = req.body;
     
     try {
-        console.log(projectName);
-        console.log(description);
-        console.log(githubLink);
-        console.log(videoLink);
-        console.log(liveLink);
-        console.log(hackathonId);
+        
         
         const hackathon = await FormHackathon.findOne({hackathon:hackathonId});
-        console.log(hackathon);
+   
         if (!hackathon) {
             return res.status(404).json({ message: 'Hackathon not found' });
         }
@@ -281,8 +275,7 @@ const projectSubmit=async(req,res)=>{
         if (teamMembers.length !== teamMembers.length) {
             return res.status(400).json({ message: 'The number of team members does not match the hackathon team size' });
         }
-       console.log(teamMembers);
-       console.log(teamMembers);
+   
         const projectSubmission = new ProjectSubmission({
             projectName,
             description,
@@ -293,7 +286,7 @@ const projectSubmit=async(req,res)=>{
             teamLeader,
             teamMembers,
         });
-        console.log(projectSubmission);
+        
         await projectSubmission.save();
       
         res.status(201).json({
@@ -322,8 +315,7 @@ const checkProjectSubmission = async (req, res) => {
         hackathon: hackathonId,
         'teamLeader.email': email,
       });
-      console.log("submiiso");
-    console.log(submission);
+ 
       if (submission) {
         return res.status(200).json({ submitted: true, project: submission });
       } else {
@@ -340,10 +332,7 @@ const createContest=async(req,res)=>{
     try {
         // Extract data from request body
         const { contestName, startTime, endTime, challenges } = req.body;
-        console.log(contestName);
-        console.log(startTime);
-        console.log(endTime);
-        console.log(challenges);
+     
         // Validate required fields
         if (!contestName || !startTime || !endTime) {
             return res.status(400).json({ message: "Contest name, start time, and end time are required." });
@@ -354,7 +343,7 @@ const createContest=async(req,res)=>{
             endTime: new Date(endTime),
             challenges,
         });
-        console.log(newContest);
+        
         // Save the contest to the database
         const savedContest = await newContest.save();
            console.log(savedContest);
@@ -368,6 +357,8 @@ const createContest=async(req,res)=>{
 
 
 }
+
+
 module.exports = {
   registerMain,
   hackathonCreate,

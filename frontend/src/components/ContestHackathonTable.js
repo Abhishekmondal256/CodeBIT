@@ -1,191 +1,67 @@
-// import React, { useEffect, useState } from "react";
-// import ContestHackathonElement from "./ContestHackathonElement";
 
-// const ContestHackathonTable = ({ UP }) => {
-//     const [upcomingHackathons, setUpcomingHackathons] = useState([]);
-//     const [pastHackathons, setPastHackathons] = useState([]);
-//     const [userRegistrations, setUserRegistrations] = useState([]); // State for user registrations
-//     const [loading, setLoading] = useState(true);
-
-//     useEffect(() => {
-//         // Function to fetch hackathons
-//         const fetchHackathons = async () => {
-//             try {
-//                 const response = await fetch("http://localhost:4000/hackathons");
-//                 const data = await response.json();
-//                 const currentDate = new Date();
-
-//                 const upcoming = data.filter(hackathon => new Date(hackathon.hackathonTimeline.start) > currentDate);
-//                 const past = data.filter(hackathon => new Date(hackathon.hackathonTimeline.start) <= currentDate);
-
-//                 setUpcomingHackathons(upcoming);
-//                 setPastHackathons(past);
-//             } catch (error) {
-//                 console.error("Error fetching hackathons:", error);
-//             } finally {
-//                 setLoading(false);
-//             }
-//         };
-
-//         // Function to fetch user registrations
-//         const fetchUserRegistrations = async () => {
-//             try {
-//                 const user = JSON.parse(localStorage.getItem("user")); // Retrieve user from localStorage
-//         const email = user?.userid; // Extract email
-//         if (!email) {
-//             console.error("User email not found in localStorage.");
-//             return;
-//         }
-//                 const response = await fetch(`http://localhost:4000/user-registrations?email=${encodeURIComponent(email)}`, {
-//                     method: "GET", // Use POST to send data in the body
-//             headers: {
-//                 "Content-Type": "application/json",
-//             },
-            
-//                 });
-//                 const registrations = await response.json();
-                
-//                 setUserRegistrations(registrations.map(reg => reg.hackathon)); // Store registered hackathon IDs
-//             } catch (error) {
-//                 console.error("Error fetching user registrations:", error);
-//             }
-//         };
-
-//         // Fetch data
-//         fetchHackathons();
-//         fetchUserRegistrations();
-//     }, []);
-
-//     // Render hackathon list
-//     const renderHackathonList = (hackathons) =>
-//         hackathons.map(({ _id, hackathonName, teamSize, registrationTimeline, hackathonTimeline }) => {
-//             const isRegistered = userRegistrations.includes(_id); // Check if the user is registered
-
-//             return (
-//                 <div key={_id} className="flex flex-col py-4 rounded-lg p-4 w-[750px]">
-//                     <ContestHackathonElement
-//                         compName={UP}
-//                         hackathonId={_id}
-//                         hackathonName={hackathonName}
-//                         teamSize={teamSize}
-//                         registrationTimeline={registrationTimeline}
-//                         hackathonTimeline={hackathonTimeline}
-//                         isRegistered={isRegistered} // Pass registration status
-//                     />
-//                 </div>
-//             );
-//         });
-
-//     return (
-//         <div className="flex flex-col w-[750px]">
-//             {loading ? (
-//                 <p>Loading...</p>
-//             ) : UP === "upcoming" ? (
-//                 renderHackathonList(upcomingHackathons)
-//             ) : UP === "past" ? (
-//                 renderHackathonList(pastHackathons)
-//             ) : (
-//                 <p>No hackathons found.</p>
-//             )}
-//         </div>
-//     );
-// };
-
-// export default ContestHackathonTable;
 
 import React, { useEffect, useState } from "react";
 import ContestHackathonElement from "./ContestHackathonElement";
-const ContestHackathonTable = ({ UP }) => {
-    const [upcomingHackathons, setUpcomingHackathons] = useState([]);
-    const [pastHackathons, setPastHackathons] = useState([]);
-    const [userRegistrations, setUserRegistrations] = useState([]); // State for user registrations
-    const [upcomingContests, setUpcomingContests] = useState([]);
-    const [pastContests, setPastContests] = useState([]);
+
+const ContestHackathonTable = ({ UP ,feat}) => {
+  
+    const [hackathons, setHackathons] = useState([]);
+    const [contests, setContests] = useState([]);
+    const [userRegistrations, setUserRegistrations] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Fetch hackathons
-        const fetchHackathons = async () => {
+        const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:4000/hackathons");
-                const data = await response.json();
                 const currentDate = new Date();
 
-                const upcoming = data.filter(hackathon => new Date(hackathon.hackathonTimeline.start) > currentDate);
-                const past = data.filter(hackathon => new Date(hackathon.hackathonTimeline.start) <= currentDate);
+                if (feat === "hackathon") {
+                    // Fetch hackathons
+                    const hackathonResponse = await fetch("http://localhost:4000/hackathons");
+                    const hackathonData = await hackathonResponse.json();
 
-                setUpcomingHackathons(upcoming);
-                setPastHackathons(past);
-            } catch (error) {
-                console.error("Error fetching hackathons:", error);
-            }
-            finally {
-                setLoading(false);
-            }
-        };
+                    const filteredHackathons = hackathonData.filter(h =>
+                        UP === "upcoming"
+                            ? new Date(h.hackathonTimeline.start) > currentDate
+                            : new Date(h.hackathonTimeline.start) <= currentDate
+                    );
 
-        // Fetch contests
-        const fetchContests = async () => {
-            try {
-                const response = await fetch("http://localhost:4000/contests");
-                const data = await response.json();
-                const currentDate = new Date();
-                      console.log(response);
-                const upcoming = data.filter(contest => new Date(contest.startTime) > currentDate);
-                const past = data.filter(contest => new Date(contest.startTime) <= currentDate);
+                    setHackathons(filteredHackathons);
 
-                setUpcomingContests(upcoming);
-                setPastContests(past);
-            } catch (error) {
-                console.error("Error fetching contests:", error);
-            }
-            finally {
-                setLoading(false);
-            }
-        };
+                    // Fetch user registrations for hackathons
+                    const user = JSON.parse(localStorage.getItem("user"));
+                    const email = user?.userid;
+                    if (email) {
+                        const registrationResponse = await fetch(
+                            `http://localhost:4000/user-registrations?email=${encodeURIComponent(email)}`
+                        );
+                        const registrationData = await registrationResponse.json();
+                        setUserRegistrations(registrationData.map(reg => reg.hackathon));
+                    }
+                } else if (feat === "contest") {
+                    // Fetch contests
+                    const contestResponse = await fetch("http://localhost:4000/contests");
+                    const contestData = await contestResponse.json();
 
-        // Fetch user registrations
-        const fetchUserRegistrations = async () => {
-            try {
-                const user = JSON.parse(localStorage.getItem("user")); // Retrieve user from localStorage
-                const email = user?.userid; // Extract email
-                if (!email) {
-                    console.error("User email not found in localStorage.");
-                    return;
+                    const filteredContests = contestData.filter(c =>
+                        UP === "upcoming"
+                            ? new Date(c.startTime) > currentDate
+                            : new Date(c.startTime) <= currentDate
+                    );
+
+                    setContests(filteredContests);
                 }
-                const response = await fetch(`http://localhost:4000/user-registrations?email=${encodeURIComponent(email)}`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-                const registrations = await response.json();
-                setUserRegistrations(registrations.map(reg => reg.hackathon)); // Store hackathon registrations
             } catch (error) {
-                console.error("Error fetching user registrations:", error);
+                console.error("Error fetching data:", error);
+            } finally {
+                setLoading(false);
             }
         };
 
-        fetchHackathons();
-        fetchContests();
-        fetchUserRegistrations();
-    }, []);
-    const renderContestList = (contests) =>
-        contests.map(({ _id, contestName,  startTime, endTime  }) => {
-           // Check if the user is registered
-            return (
-                <div key={_id} className="flex flex-col py-4 rounded-lg p-4 w-[750px]">
-                    <ContestHackathonElement
-                        compName="contest"
-                        hackathonId={_id}
-                        hackathonName={contestName}
-                        hackathonTimeline={{ start: startTime, end: endTime }}
-                         
-                    />
-                </div>
-            );
-        });
-    const renderHackathonList = (hackathons) =>
+        fetchData();
+    }, [UP,feat]);
+
+    const renderHackathonList = () =>
         hackathons.map(({ _id, hackathonName, teamSize, registrationTimeline, hackathonTimeline }) => {
             const isRegistered = userRegistrations.includes(_id); // Check if the user is registered
             return (
@@ -203,36 +79,41 @@ const ContestHackathonTable = ({ UP }) => {
             );
         });
 
- 
+    const renderContestList = () =>
+        contests.map(({ _id, contestName, startTime, endTime }) => {
+            return (
+                <div key={_id} className="flex flex-col py-4 rounded-lg p-4 w-[750px]">
+                    <ContestHackathonElement
+                        compName="contest"
+                        hackathonId={_id}
+                        hackathonName={contestName}
+                        hackathonTimeline={{ start: startTime, end: endTime }}
+                    />
+                </div>
+            );
+        });
 
     return (
         <div className="flex flex-col w-[750px]">
             {loading ? (
                 <p>Loading...</p>
-            ) : UP === "upcoming" ? (
-                <>
-                    {upcomingHackathons.length > 0 ? (
-                        renderHackathonList(upcomingHackathons)
-                    ) : upcomingContests.length > 0 ? (
-                        renderContestList(upcomingContests)
-                    ) : (
-                        <p>No upcoming hackathons or contests found.</p>
-                    )}
-                </>
-            ) : UP === "past" ? (
-                <>
-                    {pastHackathons.length > 0 ? (
-                        renderHackathonList(pastHackathons)
-                    ) : pastContests.length > 0 ? (
-                        renderContestList(pastContests)
-                    ) : (
-                        <p>No past hackathons or contests found.</p>
-                    )}
-                </>
+            ) : feat === "hackathon" ? (
+                hackathons.length > 0 ? (
+                    renderHackathonList()
+                ) : (
+                    <p>No hackathons found.</p>
+                )
+            ) : feat === "contest" ? (
+                contests.length > 0 ? (
+                    renderContestList()
+                ) : (
+                    <p>No contests found.</p>
+                )
             ) : (
-                <p>No data found.</p>
+                <p>Invalid value for UP.</p>
             )}
         </div>
     );
 };
+
 export default ContestHackathonTable;
