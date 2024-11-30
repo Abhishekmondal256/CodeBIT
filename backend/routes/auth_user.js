@@ -1,7 +1,7 @@
 const express = require("express");
 const router= express.Router();
 const {registerMain,hackathonCreate,getThemes,teamRegister,getCurrentUser,
-    projectSubmit,checkProjectSubmission,createContest}=require("../controllers/admincontroller");
+    projectSubmit,checkProjectSubmission,createContest,contestRegister}=require("../controllers/admincontroller");
 
 router.post("/registermain",registerMain);
 router.post("/hackathon/create",hackathonCreate);
@@ -10,7 +10,7 @@ router.post("/teamregister/:id",teamRegister);
 router.get("/current-user",getCurrentUser);
 router.post("/projects/submit",projectSubmit);
 
-
+router.post("/register-contest",contestRegister);
 router.get("/checkProjectSubmission", checkProjectSubmission);
 router.post("/createcontest",createContest);
 module.exports= router;

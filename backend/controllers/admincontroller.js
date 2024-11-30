@@ -4,7 +4,7 @@ const StudentRegisterSchema=require("../models/StudentRegisterSchema");
 const FormHackathon=require("../models/FormHackathon");
 const ProjectSubmission=require("../models/ProjectSubmission");
 const CreateContestSchema=require("../models/CreateContestSchema");
-
+const ContestRegistration=require("../models/ContestRegistrationSchema");
 const registerMain = async(req, res) => {
     const { collegeRollNumber, email } = req.body; // Extract user data from the request body
     if (!collegeRollNumber|| !email) {
@@ -357,6 +357,34 @@ const createContest=async(req,res)=>{
 
 
 }
+const contestRegister=async(req,res)=>{
+    const { email, contestId } = req.body;
+    try {
+      console.log(email);
+      console.log(contestId);
+      // Check if user already registered
+      const existingRegistration = await ContestRegistration.findOne({ email, contestId });
+      if (existingRegistration) {
+          return res.status(400).json({ message: "Already registered for this contest." });
+      }
+  
+      // Register user
+      const newRegistration = new ContestRegistration({
+          email,
+          contestId,
+      });
+      console.log(newRegistration);
+      await newRegistration.save();
+      res.status(201).json({ message: "Registered successfully." });
+    } catch (error) {
+        console.error("Error registering user:", error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+  
+  
+  
+  
+  }
 
 
 module.exports = {
@@ -367,5 +395,6 @@ module.exports = {
   getCurrentUser,
   projectSubmit,
   checkProjectSubmission,
-  createContest
+  createContest,
+  contestRegister
 };

@@ -2,6 +2,7 @@ const StudentSchema=require("../models/StudentSchema");
 const StudentRegisterSchema=require("../models/StudentRegisterSchema");
 const CreateHackathonSchema=require("../models/CreateHackathonSchema");
 const FormHackathon=require("../models/FormHackathon");
+const ContestRegistration=require("../models/ContestRegistrationSchema");
 const CreateContestSchema=require("../models/CreateContestSchema");// Import the student register schema
 const Token=require("../models/token");
 const jwt = require("jsonwebtoken");
@@ -146,12 +147,15 @@ const getUserRegisteredHackathons = async (req, res) => {
       res.status(500).json({ message: "Internal server error" });
   }
 }
+
+
 module.exports = {
   registerStudent,
   loginUser,
   getUserRegisteredHackathons,
   showHackathons,
-  showContest
+  showContest,
+  
   
  
 };
