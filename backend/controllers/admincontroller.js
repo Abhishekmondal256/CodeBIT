@@ -3,7 +3,7 @@ const CreateHackathonSchema =require("../models/CreateHackathonSchema");
 const StudentRegisterSchema=require("../models/StudentRegisterSchema");
 const FormHackathon=require("../models/FormHackathon");
 const ProjectSubmission=require("../models/ProjectSubmission");
-
+const CreateContestSchema=require("../models/CreateContestSchema");
 
 const registerMain = async(req, res) => {
     const { collegeRollNumber, email } = req.body; // Extract user data from the request body
@@ -335,6 +335,36 @@ const checkProjectSubmission = async (req, res) => {
     }
     
 }
+const createContest=async(req,res)=>{
+
+    try {
+        // Extract data from request body
+        const { contestName, startTime, endTime, challenges } = req.body;
+
+        // Validate required fields
+        if (!contestName || !startTime || !endTime) {
+            return res.status(400).json({ message: "Contest name, start time, and end time are required." });
+        }
+        const newContest = new CreateContestSchema({
+            contestName,
+            startTime: new Date(startTime),
+            endTime: new Date(endTime),
+            challenges,
+        });
+
+        // Save the contest to the database
+        const savedContest = await newContest.save();
+
+        // Respond with the saved contest
+        res.status(201).json({ message: "Contest created successfully", contest: savedContest });
+    } catch (error) {
+        console.error("Error creating contest:", error);
+        res.status(500).json({ message: "Internal server error", error: error.message });
+    }
+
+
+
+}
 module.exports = {
   registerMain,
   hackathonCreate,
@@ -342,5 +372,6 @@ module.exports = {
   teamRegister,
   getCurrentUser,
   projectSubmit,
-  checkProjectSubmission 
+  checkProjectSubmission,
+  createContest
 };

@@ -144,3 +144,4 @@ const ContestHackathonElement = ({
 };
 
 export default ContestHackathonElement;
+

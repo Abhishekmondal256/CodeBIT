@@ -2,7 +2,7 @@ const StudentSchema=require("../models/StudentSchema");
 const StudentRegisterSchema=require("../models/StudentRegisterSchema");
 const CreateHackathonSchema=require("../models/CreateHackathonSchema");
 const FormHackathon=require("../models/FormHackathon");
-// Import the student register schema
+const CreateContestSchema=require("../models/CreateContestSchema");// Import the student register schema
 const Token=require("../models/token");
 const jwt = require("jsonwebtoken");
 const sendEmail=require("../helperFunctions/sendEmail");
@@ -112,6 +112,7 @@ const showHackathons=async(req,res)=>{
 
 
 }
+
 const getUserRegisteredHackathons = async (req, res) => {
   const userEmail = req.query.email; // Assuming the auth route sets req.user
 

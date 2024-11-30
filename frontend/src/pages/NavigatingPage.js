@@ -5,7 +5,7 @@ import ProjectSubmission from "./ProjectSubmission";
 import FormHackathon from "./FormHackathon";
 import CreateHackathon from "./CreateHackathon";
 import CreateContest from "./CreateContest";
-import CreateChallenge from "./CreateChallenge";
+
 import Home from "./Home";
 import Login from "./Login";
 import SignUp from "./SignUp";
@@ -23,7 +23,7 @@ function NavigatingPage() {
                 {/* <Route path="/teamregister" element={<FormHackathon />} /> */}
                 <Route path="/createhackathon" element={<CreateHackathon />} />
                 <Route path="/createcontest" element={<CreateContest />} />
-                <Route path="/createchallenge" element={<CreateChallenge />} />
+                
                 <Route path="/:feat" element={<ContestHackathon />} />
                 <Route path="/users/:id/verify/:token" element={<Emailverify />} />
                 <Route path="/teamregister/:hackathonId" element={<FormHackathon />} />
