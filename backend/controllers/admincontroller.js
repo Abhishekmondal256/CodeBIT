@@ -340,7 +340,10 @@ const createContest=async(req,res)=>{
     try {
         // Extract data from request body
         const { contestName, startTime, endTime, challenges } = req.body;
-
+        console.log(contestName);
+        console.log(startTime);
+        console.log(endTime);
+        console.log(challenges);
         // Validate required fields
         if (!contestName || !startTime || !endTime) {
             return res.status(400).json({ message: "Contest name, start time, and end time are required." });
@@ -351,10 +354,10 @@ const createContest=async(req,res)=>{
             endTime: new Date(endTime),
             challenges,
         });
-
+        console.log(newContest);
         // Save the contest to the database
         const savedContest = await newContest.save();
-
+           console.log(savedContest);
         // Respond with the saved contest
         res.status(201).json({ message: "Contest created successfully", contest: savedContest });
     } catch (error) {

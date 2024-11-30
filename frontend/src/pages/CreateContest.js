@@ -15,7 +15,16 @@ const CreateContest = () => {
         constraints: "",
         outputFormat: "",
     });
-
+    const userString = localStorage.getItem("user");
+    let userId = "";
+    let token = "";
+    if (userString) {
+        const userObject = JSON.parse(userString); // Parse the JSON string
+        userId = userObject.userid || ""; // Use userid as Team Leader Email
+        token = userObject.tokene || "";  // Access token
+    } else {
+        console.log("User data not found in localStorage.");
+    }
     const [isAddingChallenge, setIsAddingChallenge] = useState(false);
 
     const handleInputChange = (key, value) => {
@@ -54,10 +63,40 @@ const CreateContest = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
-        console.log("Contest Created: ", formData);
-        alert("Contest and challenges submitted successfully!");
+        const requestData = {
+            contestName: formData.contestName,
+            startTime: formData.startTime,
+            endTime: formData.endTime,
+            challenges: formData.challenges,
+        };
+        try {
+            // Make the POST request to the backend
+            const response = await fetch('http://localhost:4000/auth/createcontest', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization":token
+                },
+                body: JSON.stringify(requestData),
+            });
+    
+            const data = await response.json();
+             console.log(data);
+            if (response.ok) {
+                // If the request is successful
+                console.log("Contest Created: ", data);
+                alert("Contest and challenges submitted successfully!");
+            } else {
+                // If there is an error from the server
+                alert(`Error: ${data.message}`);
+            }
+        } catch (error) {
+            // If there is a network error
+            console.error("Error submitting the contest:", error);
+            alert("There was an error while creating the contest. Please try again.");
+        }
 
         // Reset formData and currentChallenge
         setFormData({

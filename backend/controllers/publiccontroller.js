@@ -113,6 +113,22 @@ const showHackathons=async(req,res)=>{
 
 }
 
+const showContest=async(req,res)=>{
+try{
+const contests=await CreateContestSchema.find().sort({'startTime':-1});
+console.log(contests);
+res.json(contests);
+
+
+}catch(err){
+  res.status(500).json({ message: err.message });
+
+
+}
+
+
+
+}
 const getUserRegisteredHackathons = async (req, res) => {
   const userEmail = req.query.email; // Assuming the auth route sets req.user
 
@@ -135,6 +151,7 @@ module.exports = {
   loginUser,
   getUserRegisteredHackathons,
   showHackathons,
+  showContest
   
  
 };
