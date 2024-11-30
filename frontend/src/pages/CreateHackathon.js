@@ -11,7 +11,16 @@ const CreateHackathon = () => {
         allowLiveDeploymentLink: false,
         themes: [{ title: "", description: "" }],
     });
-
+    const userString = localStorage.getItem("user");
+    let userId = "";
+    let token = "";
+    if (userString) {
+        const userObject = JSON.parse(userString); // Parse the JSON string
+        userId = userObject.userid || ""; // Use userid as Team Leader Email
+        token = userObject.tokene || "";  // Access token
+    } else {
+        console.log("User data not found in localStorage.");
+    }
     const handleInputChange = (path, value) => {
         const pathArray = path.split(".");
         setFormData((prev) => {
@@ -53,7 +62,7 @@ const CreateHackathon = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    "Authorization": user.tokene
+                    "Authorization": token
                 },
                 body: JSON.stringify(formData),
             });

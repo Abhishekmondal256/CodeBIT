@@ -2,10 +2,12 @@ const express= require("express");
 const router= express.Router();
 const StudentRegisterSchema=require("../models/StudentRegisterSchema");
 const Token=require("../models/token");
-const {loginUser,showHackathons,registerStudent}=require("../controllers/publiccontroller");
+const {loginUser,showHackathons,registerStudent,getUserRegisteredHackathons}=require("../controllers/publiccontroller");
 router.post("/registerstudent",registerStudent);
 router.post("/login/:userType",loginUser);
 router.get("/hackathons",showHackathons);
+router.get("/user-registrations", getUserRegisteredHackathons);
+
 router.get("/users/:id/verify/:token",async(req,res)=>{
 try{
     console.log("me yaha hu");

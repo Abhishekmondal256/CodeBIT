@@ -2,6 +2,9 @@ const StudentSchema=require("../models/StudentSchema");
 const CreateHackathonSchema =require("../models/CreateHackathonSchema");
 const StudentRegisterSchema=require("../models/StudentRegisterSchema");
 const FormHackathon=require("../models/FormHackathon");
+const ProjectSubmission=require("../models/ProjectSubmission");
+
+
 const registerMain = async(req, res) => {
     const { collegeRollNumber, email } = req.body; // Extract user data from the request body
     if (!collegeRollNumber|| !email) {
@@ -251,10 +254,93 @@ const getCurrentUser=async(req,res)=>{
   }
 
 }
+const projectSubmit=async(req,res)=>{
+    console.log("yaha pe");
+    const { projectName, description, githubLink, videoLink, liveLink, hackathonId, teamLeader,
+        teamMembers } = req.body;
+    
+    try {
+        console.log(projectName);
+        console.log(description);
+        console.log(githubLink);
+        console.log(videoLink);
+        console.log(liveLink);
+        console.log(hackathonId);
+        
+        const hackathon = await FormHackathon.findOne({hackathon:hackathonId});
+        console.log(hackathon);
+        if (!hackathon) {
+            return res.status(404).json({ message: 'Hackathon not found' });
+        }
+
+        // Assuming the hackathon contains the teamLeader and teamMembers details
+        const teamLeader = hackathon.teamLeader; // Get the team leader details from the hackathon document
+        const teamMembers = hackathon.teamMembers; // Get all team members for the hackathon
+
+        // Validate the teamMembers submitted by the user (you may want to validate if the user is part of the team)
+        if (teamMembers.length !== teamMembers.length) {
+            return res.status(400).json({ message: 'The number of team members does not match the hackathon team size' });
+        }
+       console.log(teamMembers);
+       console.log(teamMembers);
+        const projectSubmission = new ProjectSubmission({
+            projectName,
+            description,
+            githubLink,
+            videoLink,
+            liveLink,
+            hackathon: hackathonId,
+            teamLeader,
+            teamMembers,
+        });
+        console.log(projectSubmission);
+        await projectSubmission.save();
+      
+        res.status(201).json({
+            message: 'Project submitted successfully!',
+            projectSubmission,
+        });
+    } catch (error) {
+        if (error.name === 'ValidationError') {
+            console.error('Validation Error:', error.errors);
+        } else {
+            console.error('Error:', error);
+        }
+        res.status(500).json({ message: 'Error submitting project', error: error.message });
+    }
+
+
+
+}
+
+const checkProjectSubmission = async (req, res) => {
+    const { hackathonId, email } = req.query; // Accept hackathon ID and user email in the query params
+  
+    try {
+      // Check if a project exists for the given hackathon and email
+      const submission = await ProjectSubmission.findOne({
+        hackathon: hackathonId,
+        'teamLeader.email': email,
+      });
+      console.log("submiiso");
+    console.log(submission);
+      if (submission) {
+        return res.status(200).json({ submitted: true, project: submission });
+      } else {
+        return res.status(200).json({ submitted: false });
+      }
+    } catch (error) {
+      console.error("Error checking project submission:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+    
+}
 module.exports = {
   registerMain,
   hackathonCreate,
   getThemes,
   teamRegister,
-  getCurrentUser
+  getCurrentUser,
+  projectSubmit,
+  checkProjectSubmission 
 };

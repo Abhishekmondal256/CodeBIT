@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const CreateHackathonSchema=require("./CreateHackathonSchema");
 // Define the schema for project submission
 const projectSubmissionSchema = new mongoose.Schema({
   projectName: {
@@ -13,27 +13,47 @@ const projectSubmissionSchema = new mongoose.Schema({
   githubLink: {
     type: String,
     required: true, // GitHub link is required
-    match: [
-      /^(https:\/\/github\.com\/)([A-Za-z0-9-]+)(\/[A-Za-z0-9-]+)?$/,
-      'Please provide a valid GitHub repository link',
-    ], // Regex to validate GitHub links
+ 
   },
   videoLink: {
     type: String,
-    required: true, // Video link is required
-    match: [
-      /^(https:\/\/www\.youtube\.com\/watch\?v=)([A-Za-z0-9_-]+)$/,
-      'Please provide a valid YouTube video link',
-    ], // Regex to validate YouTube links
+    required: false, // Optional if allowVideoLink is false in hackathon
+   
   },
   liveLink: {
     type: String,
-    required: true, // Live deployment link is required
-    match: [
-      /^(https:\/\/)(www\.)?[a-z0-9]+\.[a-z]+/,
-      'Please provide a valid live deployment link',
-    ], // Regex to validate live link (basic validation)
+    required: false, // Optional if allowLiveDeploymentLink is false in hackathon
+    
   },
+  hackathon: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'CreateHackathonSchema', // Reference to CreateHackathon model
+    required: true, // Every project must be associated with a hackathon
+  },
+  teamLeader: {
+    email: {
+      type: String,
+      required: true, // Team leader email is required
+      
+    },
+    name: {
+      type: String,
+      required: true, // Team leader name is required
+    },
+  },
+  teamMembers: [
+    {
+      email: {
+        type: String,
+        required: true, // Each team member email is required
+      
+      },
+      name: {
+        type: String,
+        required: true, // Each team member name is required
+      },
+    },
+  ],
   createdAt: {
     type: Date,
     default: Date.now, // Automatically sets the creation date

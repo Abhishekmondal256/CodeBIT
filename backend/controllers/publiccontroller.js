@@ -1,6 +1,7 @@
 const StudentSchema=require("../models/StudentSchema");
 const StudentRegisterSchema=require("../models/StudentRegisterSchema");
 const CreateHackathonSchema=require("../models/CreateHackathonSchema");
+const FormHackathon=require("../models/FormHackathon");
 // Import the student register schema
 const Token=require("../models/token");
 const jwt = require("jsonwebtoken");
@@ -111,10 +112,28 @@ const showHackathons=async(req,res)=>{
 
 
 }
+const getUserRegisteredHackathons = async (req, res) => {
+  const userEmail = req.query.email; // Assuming the auth route sets req.user
 
+  try {
+    const registrations = await FormHackathon.find({
+      $or: [
+        { 'teamLeader.email': userEmail }, // Match email in teamLeader
+        { 'teamMembers.email': userEmail }, // Match email in teamMembers array
+      ],
+    });
+         
+      res.status(200).json(registrations);
+  } catch (error) {
+      console.error("Error fetching user registrations:", error);
+      res.status(500).json({ message: "Internal server error" });
+  }
+}
 module.exports = {
   registerStudent,
   loginUser,
-  showHackathons
+  getUserRegisteredHackathons,
+  showHackathons,
+  
  
 };

@@ -1,34 +1,97 @@
 import React, { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom'; // Import useNavigate for navigation and useParams to get hackathonId
 
 const ProjectSubmission = () => {
+    const { hackathonId } = useParams();  // Get the hackathonId from the URL
+    const navigate = useNavigate();  // Initialize navigate for navigation
+
     const [formData, setFormData] = useState({
         projectName: '',
         description: '',
         githubLink: '',
         videoLink: '',
         liveLink: '',
+        teamLeader: {
+            email: '', // Add leader email
+            name: '',  // Add leader name
+        },
+        teamMembers: [{ email: '', name: '' }],
     });
 
-    const handleInputChange = (e) => {
+    const handleInputChange = (e,index = null) => {
         const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
+        if (index !== null) {
+            // Handle change for team members
+            setFormData((prev) => {
+                const updatedMembers = [...prev.teamMembers];
+                updatedMembers[index] = { ...updatedMembers[index], [name]: value };
+                return { ...prev, teamMembers: updatedMembers };
+            });
+        } else {
+            // Handle change for team leader or other fields
+            setFormData((prev) => ({
+                ...prev,
+                [name]: value,
+            }));
+        }
     };
 
-    const handleSubmit = (e) => {
+    const userString = localStorage.getItem("user");
+    let userId = "";
+    let token = "";
+    if (userString) {
+        const userObject = JSON.parse(userString); // Parse the JSON string
+        userId = userObject.userid || ""; // Use userid as Team Leader Email
+        token = userObject.tokene || "";  // Access token
+    } else {
+        console.log("User data not found in localStorage.");
+    }
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Project Submitted:', formData);
-        alert('Project submitted successfully!');
-        // Reset form after submission
-        setFormData({
-            projectName: '',
-            description: '',
-            githubLink: '',
-            videoLink: '',
-            liveLink: '',
-        });
+
+        // Add hackathonId to form data
+        const dataToSubmit = {
+            ...formData,
+            hackathonId, // Include the hackathonId from the URL
+        };
+
+        try {
+            
+            // Send the form data to the backend using fetch
+            const response = await fetch('http://localhost:4000/auth/projects/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": token,
+                },
+                body: JSON.stringify(dataToSubmit),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to submit project');
+            }
+
+            const result = await response.json();
+            alert('Project submitted successfully!');
+            
+            // Navigate to /hackathon on success
+            navigate('/hackathon');
+
+            // Reset form after successful submission
+            setFormData({
+                projectName: '',
+                description: '',
+                githubLink: '',
+                videoLink: '',
+                liveLink: '',
+                teamLeader: { email: '', name: '' },
+                teamMembers: [{ email: '', name: '' }],
+            });
+        } catch (error) {
+            console.error('Error submitting project:', error);
+            alert('Failed to submit project. Please try again later.');
+        }
     };
 
     return (
