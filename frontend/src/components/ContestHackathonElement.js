@@ -10,7 +10,7 @@ const ContestHackathonElement = ({
     teamSize,
     registrationTimeline,
     hackathonTimeline,
-    isRegistered
+    isRegistered,
 }) => {
     const user = JSON.parse(localStorage.getItem("user")); // Retrieve user from localStorage
     const userType = user?.userType || null; // Get userType or set null if not logged in
@@ -23,6 +23,7 @@ const ContestHackathonElement = ({
 
     // Parse timeline dates
     const registrationEnd = registrationTimeline?.end ? new Date(registrationTimeline.end) : null;
+    const hackathonStart = hackathonTimeline?.start ? new Date(hackathonTimeline.start) : null;
     const hackathonEnd = hackathonTimeline?.end ? new Date(hackathonTimeline.end) : null;
 
     // Derived state
@@ -38,10 +39,10 @@ const ContestHackathonElement = ({
                 const response = await fetch(
                     `http://localhost:4000/auth/checkProjectSubmission?hackathonId=${hackathonId}&email=${userEmail}`,
                     {
-                        method: 'GET',
+                        method: "GET",
                         headers: {
-                            'Authorization': token,
-                            'Content-Type': 'application/json',
+                            Authorization: token,
+                            "Content-Type": "application/json",
                         },
                     }
                 );
@@ -84,7 +85,7 @@ const ContestHackathonElement = ({
                         contestId: hackathonId,
                     }),
                 });
-                    
+
                 if (!response.ok) {
                     throw new Error("Registration failed");
                 }
@@ -127,28 +128,66 @@ const ContestHackathonElement = ({
         <div className="flex items-center justify-between text-[15px] py-4 border border-[#293139] bg-[#21272e] rounded-lg h-[250px] px-4">
             <div className="flex flex-col justify-center">
                 <div className="text-[30px] text-green-500 font-bold">{hackathonName}</div>
+
+                {/* Hackathon Details */}
                 {compName === "hackathon" && (
                     <>
                         <div>Team Size: {teamSize}</div>
                         <div>
-                            <strong>Registration:</strong> 
-                            {registrationTimeline?.start 
-                                ? `${new Date(registrationTimeline.start).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}` 
-                                : 'N/A'} 
-                            to 
-                            {registrationEnd 
-                                ? `${new Date(registrationEnd).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}` 
-                                : 'N/A'}
+                            <strong>Registration:</strong>{" "}
+                            {registrationTimeline?.start
+                                ? `${new Date(registrationTimeline.start).toLocaleString([], {
+                                      dateStyle: "short",
+                                      timeStyle: "short",
+                                  })}`
+                                : "N/A"}{" "}
+                            to{" "}
+                            {registrationEnd
+                                ? `${registrationEnd.toLocaleString([], {
+                                      dateStyle: "short",
+                                      timeStyle: "short",
+                                  })}`
+                                : "N/A"}
                         </div>
                         <div>
-                            <strong>Hackathon:</strong> 
-                            {hackathonTimeline?.start 
-                                ? `${new Date(hackathonTimeline.start).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}` 
-                                : 'N/A'} 
-                            to 
-                            {hackathonEnd 
-                                ? `${new Date(hackathonEnd).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}` 
-                                : 'N/A'}
+                            <strong>Hackathon:</strong>{" "}
+                            {hackathonTimeline?.start
+                                ? `${hackathonStart.toLocaleString([], {
+                                      dateStyle: "short",
+                                      timeStyle: "short",
+                                  })}`
+                                : "N/A"}{" "}
+                            to{" "}
+                            {hackathonEnd
+                                ? `${hackathonEnd.toLocaleString([], {
+                                      dateStyle: "short",
+                                      timeStyle: "short",
+                                  })}`
+                                : "N/A"}
+                        </div>
+                    </>
+                )}
+
+                {/* Contest Details */}
+                {compName === "contest" && (
+                    <>
+                        <div>
+                            <strong>Contest Date:</strong>{" "}
+                            {hackathonStart
+                                ? `${hackathonStart.toLocaleDateString([], {
+                                      dateStyle: "medium",
+                                  })}`
+                                : "N/A"}
+                        </div>
+                        <div>
+                            <strong>Contest Time:</strong>{" "}
+                            {hackathonStart && hackathonEnd
+                                ? `${hackathonStart.toLocaleTimeString([], {
+                                      timeStyle: "short",
+                                  })} - ${hackathonEnd.toLocaleTimeString([], {
+                                      timeStyle: "short",
+                                  })}`
+                                : "N/A"}
                         </div>
                     </>
                 )}
@@ -173,32 +212,31 @@ const ContestHackathonElement = ({
                     </div>
                 )}
 
-{isRegistered && (
-    <>
-        {compName === "hackathon" && (
-            <div
-                onClick={isProjectSubmitted ? null : handleEnterClick}
-                className={`w-[120px] ${
-                    isProjectSubmitted
-                        ? "bg-gray-500 cursor-not-allowed"
-                        : "hover:bg-[#0a9160] cursor-pointer bg-[#0DB276]"
-                } rounded-lg py-2 px-4 text-center`}
-            >
-                {isProjectSubmitted ? "Project Submitted" : "Enter →"}
-            </div>
-        )}
+                {isRegistered && (
+                    <>
+                        {compName === "hackathon" && (
+                            <div
+                                onClick={isProjectSubmitted ? null : handleEnterClick}
+                                className={`w-[120px] ${
+                                    isProjectSubmitted
+                                        ? "bg-gray-500 cursor-not-allowed"
+                                        : "hover:bg-[#0a9160] cursor-pointer bg-[#0DB276]"
+                                } rounded-lg py-2 px-4 text-center`}
+                            >
+                                {isProjectSubmitted ? "Project Submitted" : "Enter →"}
+                            </div>
+                        )}
 
-        {compName === "contest" && !hackathonEnded && (
-            <div
-                onClick={handleEnterClick}
-                className="w-[120px] hover:bg-[#0a9160] cursor-pointer bg-[#0DB276] rounded-lg py-2 px-4 text-center"
-            >
-                Enter →
-            </div>
-        )}
-    </>
-)}
-
+                        {compName === "contest" && !hackathonEnded && (
+                            <div
+                                onClick={handleEnterClick}
+                                className="w-[120px] hover:bg-[#0a9160] cursor-pointer bg-[#0DB276] rounded-lg py-2 px-4 text-center"
+                            >
+                                Enter →
+                            </div>
+                        )}
+                    </>
+                )}
 
                 {canViewLeaderboard && (
                     <div
