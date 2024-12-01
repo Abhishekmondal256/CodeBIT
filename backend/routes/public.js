@@ -2,13 +2,13 @@ const express= require("express");
 const router= express.Router();
 const StudentRegisterSchema=require("../models/StudentRegisterSchema");
 const Token=require("../models/token");
-const {loginUser,showHackathons,registerStudent,getUserRegisteredHackathons,showContest,contestRegister}=require("../controllers/publiccontroller");
+const {loginUser,showHackathons,registerStudent,getUserRegisteredHackathons,showContest,contestRegister,getUserRegisteredContests}=require("../controllers/publiccontroller");
 router.post("/registerstudent",registerStudent);
 router.post("/login/:userType",loginUser);
 router.get("/hackathons",showHackathons);
 router.get("/contests",showContest);
 router.get("/user-registrations", getUserRegisteredHackathons);
-
+router.get("/user-registrationscontest",getUserRegisteredContests);
 
 router.get("/users/:id/verify/:token",async(req,res)=>{
 try{

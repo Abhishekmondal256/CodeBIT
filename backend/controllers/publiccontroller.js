@@ -4,6 +4,7 @@ const CreateHackathonSchema=require("../models/CreateHackathonSchema");
 const FormHackathon=require("../models/FormHackathon");
 const ContestRegistration=require("../models/ContestRegistrationSchema");
 const CreateContestSchema=require("../models/CreateContestSchema");// Import the student register schema
+
 const Token=require("../models/token");
 const jwt = require("jsonwebtoken");
 const sendEmail=require("../helperFunctions/sendEmail");
@@ -147,7 +148,23 @@ const getUserRegisteredHackathons = async (req, res) => {
       res.status(500).json({ message: "Internal server error" });
   }
 }
+const getUserRegisteredContests=async(req,res)=>{
+const userEmail=req.query.email; 
 
+try {
+  
+  const registrations = await ContestRegistration.find({
+    email: userEmail,
+  });
+     
+    res.status(200).json(registrations);
+} catch (error) {
+    console.error("Error fetching user registrations:", error);
+    res.status(500).json({ message: "Internal server error" });
+}
+
+
+}
 
 module.exports = {
   registerStudent,
@@ -155,7 +172,7 @@ module.exports = {
   getUserRegisteredHackathons,
   showHackathons,
   showContest,
-  
+  getUserRegisteredContests
   
  
 };

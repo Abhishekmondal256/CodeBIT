@@ -313,7 +313,10 @@ const checkProjectSubmission = async (req, res) => {
       // Check if a project exists for the given hackathon and email
       const submission = await ProjectSubmission.findOne({
         hackathon: hackathonId,
-        'teamLeader.email': email,
+        $or: [
+            { 'teamLeader.email': email }, // Match with the team leader email
+            { 'teamMembers.email': email } 
+        ],
       });
  
       if (submission) {
@@ -375,6 +378,7 @@ const contestRegister=async(req,res)=>{
       });
       console.log(newRegistration);
       await newRegistration.save();
+      console.log("hogya kaam");
       res.status(201).json({ message: "Registered successfully." });
     } catch (error) {
         console.error("Error registering user:", error);

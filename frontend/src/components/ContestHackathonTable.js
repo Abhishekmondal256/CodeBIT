@@ -8,6 +8,7 @@ const ContestHackathonTable = ({ UP ,feat}) => {
     const [hackathons, setHackathons] = useState([]);
     const [contests, setContests] = useState([]);
     const [userRegistrations, setUserRegistrations] = useState([]);
+    const [userRegistrationscontest,setUserRegistrationscontest]=useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -36,6 +37,7 @@ const ContestHackathonTable = ({ UP ,feat}) => {
                             `http://localhost:4000/user-registrations?email=${encodeURIComponent(email)}`
                         );
                         const registrationData = await registrationResponse.json();
+                        
                         setUserRegistrations(registrationData.map(reg => reg.hackathon));
                     }
                 } else if (feat === "contest") {
@@ -50,6 +52,17 @@ const ContestHackathonTable = ({ UP ,feat}) => {
                     );
 
                     setContests(filteredContests);
+                    const user = JSON.parse(localStorage.getItem("user"));
+                    const email = user?.userid;
+                     if(email){
+                         const registrationResponse = await fetch(
+                            `http://localhost:4000/user-registrationscontest?email=${encodeURIComponent(email)}`
+                        );
+                        const registrationData = await registrationResponse.json();
+                        
+                        setUserRegistrationscontest(registrationData.map(reg => reg.contestId));
+                     }
+
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -64,6 +77,7 @@ const ContestHackathonTable = ({ UP ,feat}) => {
     const renderHackathonList = () =>
         hackathons.map(({ _id, hackathonName, teamSize, registrationTimeline, hackathonTimeline }) => {
             const isRegistered = userRegistrations.includes(_id); // Check if the user is registered
+            
             return (
                 <div key={_id} className="flex flex-col py-4 rounded-lg p-4 w-[750px]">
                     <ContestHackathonElement
@@ -81,6 +95,8 @@ const ContestHackathonTable = ({ UP ,feat}) => {
 
     const renderContestList = () =>
         contests.map(({ _id, contestName, startTime, endTime }) => {
+            const isRegistered = userRegistrationscontest.includes(_id);
+           
             return (
                 <div key={_id} className="flex flex-col py-4 rounded-lg p-4 w-[750px]">
                     <ContestHackathonElement
@@ -88,6 +104,7 @@ const ContestHackathonTable = ({ UP ,feat}) => {
                         hackathonId={_id}
                         hackathonName={contestName}
                         hackathonTimeline={{ start: startTime, end: endTime }}
+                        isRegistered={isRegistered}
                     />
                 </div>
             );
