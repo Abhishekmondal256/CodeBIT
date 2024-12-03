@@ -19,12 +19,13 @@ const ContestHackathonTable = ({ UP ,feat}) => {
                 if (feat === "hackathon") {
                     // Fetch hackathons
                     const hackathonResponse = await fetch("http://localhost:4000/hackathons");
+
                     const hackathonData = await hackathonResponse.json();
 
                     const filteredHackathons = hackathonData.filter(h =>
                         UP === "upcoming"
-                            ? new Date(h.hackathonTimeline.start) > currentDate
-                            : new Date(h.hackathonTimeline.start) <= currentDate
+                            ? new Date(h.hackTime.start) > currentDate
+                            : new Date(h.hackTime.start) <= currentDate
                     );
 
                     setHackathons(filteredHackathons);
@@ -37,8 +38,7 @@ const ContestHackathonTable = ({ UP ,feat}) => {
                             `http://localhost:4000/user-registrations?email=${encodeURIComponent(email)}`
                         );
                         const registrationData = await registrationResponse.json();
-                        
-                        setUserRegistrations(registrationData.map(reg => reg.hackathon));
+                        setUserRegistrations(registrationData.map(reg => reg.hackid));
                     }
                 } else if (feat === "contest") {
                     // Fetch contests
@@ -59,9 +59,10 @@ const ContestHackathonTable = ({ UP ,feat}) => {
                             `http://localhost:4000/user-registrationscontest?email=${encodeURIComponent(email)}`
                         );
                         const registrationData = await registrationResponse.json();
-                        
-                        setUserRegistrationscontest(registrationData.map(reg => reg.contestId));
-                     }
+                       
+                        setUserRegistrationscontest(registrationData.registeredContests.filter(reg => reg.contestId))
+                            
+                        }
 
                 }
             } catch (error) {
@@ -75,18 +76,19 @@ const ContestHackathonTable = ({ UP ,feat}) => {
     }, [UP,feat]);
 
     const renderHackathonList = () =>
-        hackathons.map(({ _id, hackathonName, teamSize, registrationTimeline, hackathonTimeline }) => {
+   
+        hackathons.map(({ _id, hackName,  tSize, regTime, hackTime }) => {
             const isRegistered = userRegistrations.includes(_id); // Check if the user is registered
             
             return (
-                <div key={_id} className="flex flex-col py-4 rounded-lg p-4 w-[750px]">
+                <div key={_id}  className="flex flex-col py-4 rounded-lg p-4 w-[750px]">
                     <ContestHackathonElement
                         compName="hackathon"
                         hackathonId={_id}
-                        hackathonName={hackathonName}
-                        teamSize={teamSize}
-                        registrationTimeline={registrationTimeline}
-                        hackathonTimeline={hackathonTimeline}
+                        hackathonName={hackName}
+                        teamSize={tSize}
+                        registrationTimeline={regTime}
+                        hackathonTimeline={hackTime}
                         isRegistered={isRegistered} // Pass registration status
                     />
                 </div>
@@ -94,8 +96,10 @@ const ContestHackathonTable = ({ UP ,feat}) => {
         });
 
     const renderContestList = () =>
+       
         contests.map(({ _id, contestName, startTime, endTime }) => {
-            const isRegistered = userRegistrationscontest.includes(_id);
+            
+            const isRegistered = userRegistrationscontest.some(reg => reg.contestId === _id);
            
             return (
                 <div key={_id} className="flex flex-col py-4 rounded-lg p-4 w-[750px]">

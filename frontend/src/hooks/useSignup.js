@@ -21,7 +21,7 @@ const useSignup = () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ collegeRollNumber,email ,password})
+            body: JSON.stringify({ roll:collegeRollNumber,email ,pass :password})
         })
         
         const json = await response.json();

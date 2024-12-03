@@ -62,7 +62,11 @@ const ContestHackathonElement = ({
     }, [userEmail, hackathonId, token]);
 
     // Helper functions
-    const isRegistrationOpen = !registrationClosed && !isRegistered && hackathonEnd > currentDate;
+    const isRegistrationOpen =
+        userType !== "admin" && // Ensure admins cannot see the register button
+        !registrationClosed &&
+        !isRegistered &&
+        hackathonEnd > currentDate;
     const canViewLeaderboard = hackathonEnded;
 
     // Handle Register
@@ -238,7 +242,7 @@ const ContestHackathonElement = ({
                     </>
                 )}
 
-                {canViewLeaderboard && (
+                {canViewLeaderboard && userType !== "admin" && (
                     <div
                         onClick={handleLeaderboardClick}
                         className="w-[120px] hover:bg-[#0a9160] cursor-pointer bg-[#0DB276] rounded-lg py-2 px-4 text-center"

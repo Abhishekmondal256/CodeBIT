@@ -17,7 +17,7 @@ const useLogin = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ userid, password }),
+                body: JSON.stringify({ userid, pass: password }),
             });
 
             const json = await response.json();

@@ -1,20 +1,20 @@
-const StudentSchema=require("../models/StudentSchema");
-const StudentRegisterSchema=require("../models/StudentRegisterSchema");
-const CreateHackathonSchema=require("../models/CreateHackathonSchema");
-const FormHackathon=require("../models/FormHackathon");
-const ContestRegistration=require("../models/ContestRegistrationSchema");
-const CreateContestSchema=require("../models/CreateContestSchema");// Import the student register schema
+const userSchema=require("../models/userSchema");
+const VerificationSchema=require("../models/VerificationSchema");
+const ContestSchema=require("../models/ContestSchema");
+const HackathonSchema=require("../models/HackathonSchema");
+// const ContestRegistration=require("../models/ContestRegistrationSchema");
+// const CreateContestSchema=require("../models/CreateContestSchema");// Import the student register schema
 
-const Token=require("../models/token");
+const Token=require("../models/tokenSchema");
 const jwt = require("jsonwebtoken");
 const sendEmail=require("../helperFunctions/sendEmail");
 const crypto=require("crypto");
 let {  authenticatedUser } = require("../helperFunctions/publicHelper");
 
 const registerStudent = async (req, res) => {
-  const { email, collegeRollNumber, password } = req.body;  // Extract the required data from the request body
+  const { email,roll, pass } = req.body;  // Extract the required data from the request body
 
-  if (!email || !collegeRollNumber || !password) {
+  if (!email || !roll || !pass) {
     return res.status(400).json({
       message: "Email, collegeRollNumber, and password are required",
     });
@@ -22,8 +22,10 @@ const registerStudent = async (req, res) => {
 
   try {
     // Check if the student exists in the studentMain schema
-    const existingStudent = await StudentSchema.findOne({ email, collegeRollNumber });
-    const newexistingStudent=await StudentRegisterSchema.findOne({email,collegeRollNumber});
+    const existingStudent = await VerificationSchema.findOne({ email, roll });
+    
+    const newexistingStudent=await userSchema.findOne({email,roll});
+    
     if(!existingStudent){
         return res.status(409).json({
             message: "Student with this email and roll number is not eligible for  registration",
@@ -37,22 +39,22 @@ const registerStudent = async (req, res) => {
     }
 
     // Create a new student document using the studentRegister model
-    const newStudent = new StudentRegisterSchema({
+    const newStudent = new userSchema({
       email,
-      collegeRollNumber,
-      password,
+      roll,
+      pass,
     });
 
     // Save the student registration
     const savedStudent = await newStudent.save();
         const token=await new Token({
-          userId:savedStudent._id,
+          uId:savedStudent._id,
           token:crypto.randomBytes(32).toString("hex")
         }).save();
-        
-        const url=`${process.env.BASE_URL}users/${savedStudent._id}/verify/${token.token}`;
        
-       const p= await sendEmail(savedStudent.email,"Verify Email",url);
+        const url=`${process.env.BASE_URL}users/${savedStudent._id}/verify/${token.token}`;
+      
+       await sendEmail(savedStudent.email,"Verify Email",url);
        
     res.status(201).json({
       message: "An Email sent to your account please verify",
@@ -68,20 +70,22 @@ const registerStudent = async (req, res) => {
 };
 const loginUser = async (req, res) => {
   const { userType } = req.params;
-  const { userid, password } = req.body;
- 
+  const { userid, pass } = req.body;
+ console.log(userType);
+ console.log(userid);
+ console.log(pass);
   // Check if userid and password are provided
-  if (!userid || !password) {
+  if (!userid || !pass) {
       return res.status(404).json({ error: 'Username and password are required.' });
   }
   // User authentication successful, generate JWT token
-  let user = await authenticatedUser(userType, userid, password);
+  let user = await authenticatedUser(userType, userid, pass);
   if (user ) {
     if(userType=='student' &&  !user.isVerified ){
-      let token=await Token.findOne({userId:user._id});
+      let token=await Token.findOne({uId:user._id});
       if(!token){
         token=await new Token({
-          userId:user._id,
+          uId:user._id,
           token:crypto.randomBytes(32).toString("hex")
         }).save();
         
@@ -105,7 +109,7 @@ const loginUser = async (req, res) => {
 }
 const showHackathons=async(req,res)=>{
   try {
-    const hackathons = await CreateHackathonSchema.find().sort({ 'hackathonTimeline.start': -1 });
+    const hackathons = await HackathonSchema.find().sort({ 'hackTime.start': -1 });
     res.json(hackathons);
 } catch (err) {
     res.status(500).json({ message: err.message });
@@ -117,7 +121,7 @@ const showHackathons=async(req,res)=>{
 
 const showContest=async(req,res)=>{
 try{
-const contests=await CreateContestSchema.find().sort({'startTime':-1});
+const contests=await ContestSchema.find().sort({'startTime':-1});
 
 res.json(contests);
 
@@ -135,14 +139,19 @@ const getUserRegisteredHackathons = async (req, res) => {
   const userEmail = req.query.email; // Assuming the auth route sets req.user
 
   try {
-    const registrations = await FormHackathon.find({
-      $or: [
-        { 'teamLeader.email': userEmail }, // Match email in teamLeader
-        { 'teamMembers.email': userEmail }, // Match email in teamMembers array
-      ],
-    });
-         
-      res.status(200).json(registrations);
+    const user = await userSchema.findOne({ email: userEmail });
+    
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const hackathons = user.hackhist.filter(
+      (hack) =>
+        hack.teamLeader.email === userEmail ||
+        hack.teamMembers.some((member) => member.email === userEmail)
+    );
+
+    // Respond with the filtered hackathons
+    res.status(200).json(hackathons);
   } catch (error) {
       console.error("Error fetching user registrations:", error);
       res.status(500).json({ message: "Internal server error" });
@@ -152,12 +161,20 @@ const getUserRegisteredContests=async(req,res)=>{
 const userEmail=req.query.email; 
 
 try {
-  
-  const registrations = await ContestRegistration.find({
-    email: userEmail,
-  });
+ 
+  const user = await userSchema.findOne({ email: userEmail });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found." });
+        }
      
-    res.status(200).json(registrations);
+        const registeredContests = user.cnthis.map((contest) => ({
+          contestId: contest.cntid,
+          points: contest.point || 0, // Default points to 0 if not set
+          submissions: contest.submiss, // Include submissions for the contest
+      }));
+console.log(registeredContests);
+      res.status(200).json({ registeredContests });
 } catch (error) {
     console.error("Error fetching user registrations:", error);
     res.status(500).json({ message: "Internal server error" });

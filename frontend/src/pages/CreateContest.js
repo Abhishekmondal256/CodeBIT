@@ -14,17 +14,15 @@ const CreateContest = () => {
         inputFormat: "",
         constraints: "",
         outputFormat: "",
+        examples: [], // List of example inputs/outputs
+        testCases: [], // List of test cases
+        points: "",
+        exampleInput: "",
+        exampleOutput: "",
+        testCaseInput: "",
+        testCaseOutput: "",
     });
-    const userString = localStorage.getItem("user");
-    let userId = "";
-    let token = "";
-    if (userString) {
-        const userObject = JSON.parse(userString); // Parse the JSON string
-        userId = userObject.userid || ""; // Use userid as Team Leader Email
-        token = userObject.tokene || "";  // Access token
-    } else {
-        console.log("User data not found in localStorage.");
-    }
+
     const [isAddingChallenge, setIsAddingChallenge] = useState(false);
 
     const handleInputChange = (key, value) => {
@@ -41,76 +39,132 @@ const CreateContest = () => {
         }));
     };
 
+    const handleAddExample = () => {
+        if (currentChallenge.exampleInput && currentChallenge.exampleOutput) {
+            const newExample = {
+                inp: currentChallenge.exampleInput,
+                out: currentChallenge.exampleOutput,
+            };
+
+            setCurrentChallenge((prev) => ({
+                ...prev,
+                examples: [...prev.examples, newExample],
+                exampleInput: "",
+                exampleOutput: "",
+            }));
+        } else {
+            alert("Please fill in both example input and output.");
+        }
+    };
+    const userString = localStorage.getItem("user");
+    let userId = "";
+    let token = "";
+    if (userString) {
+        const userObject = JSON.parse(userString); // Parse the JSON string
+        userId = userObject.userid || ""; // Use userid as Team Leader Email
+        token = userObject.tokene || "";  // Access token
+    } else {
+        console.log("User data not found in localStorage.");
+    }
+    const handleAddTestCase = () => {
+        if (currentChallenge.testCaseInput && currentChallenge.testCaseOutput) {
+            const newTestCase = {
+                inp: currentChallenge.testCaseInput,
+                expout: currentChallenge.testCaseOutput,
+            };
+
+            setCurrentChallenge((prev) => ({
+                ...prev,
+                testCases: [...prev.testCases, newTestCase],
+                testCaseInput: "",
+                testCaseOutput: "",
+            }));
+        } else {
+            alert("Please fill in both test case input and output.");
+        }
+    };
+
     const handleAddChallenge = () => {
+        if (
+            !currentChallenge.challengeName ||
+            !currentChallenge.points ||
+            !currentChallenge.problemStatement
+        ) {
+            alert("Please fill in all the required fields for the challenge.");
+            return;
+        }
+
         setFormData((prev) => ({
             ...prev,
             challenges: [...prev.challenges, currentChallenge],
         }));
+
         setCurrentChallenge({
             challengeName: "",
             problemStatement: "",
             inputFormat: "",
             constraints: "",
             outputFormat: "",
+            examples: [],
+            testCases: [],
+            points: "",
+            exampleInput: "",
+            exampleOutput: "",
+            testCaseInput: "",
+            testCaseOutput: "",
         });
+
         setIsAddingChallenge(false);
     };
 
-    const handleRemoveChallenge = (index) => {
-        setFormData((prev) => ({
-            ...prev,
-            challenges: prev.challenges.filter((_, idx) => idx !== index),
-        }));
-    };
-
-    const handleSubmit = async(e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        
         const requestData = {
-            contestName: formData.contestName,
+            contName: formData.contestName,
             startTime: formData.startTime,
             endTime: formData.endTime,
-            challenges: formData.challenges,
+            problems: formData.challenges.map((challenge) => ({
+                pnt: parseInt(challenge.points, 10),
+                desc: {
+                    probName: challenge.challengeName,
+                    statement: challenge.problemStatement,
+                    inpForm: challenge.inputFormat,
+                    constraint: challenge.constraints,
+                    outForm: challenge.outputFormat,
+                },
+                exmp: challenge.examples,
+                testcs: challenge.testCases,
+            })),
         };
+
         try {
-            // Make the POST request to the backend
-            const response = await fetch('http://localhost:4000/auth/createcontest', {
-                method: 'POST',
+            console.log(requestData);
+            console.log(token)
+            const response = await fetch("http://localhost:4000/auth/createcontest", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
-                    "Authorization":token
+                    "Content-Type": "application/json",
+                    "Authorization": token
                 },
                 body: JSON.stringify(requestData),
             });
-    
+
             const data = await response.json();
-             console.log(data);
             if (response.ok) {
-                // If the request is successful
-                console.log("Contest Created: ", data);
                 alert("Contest and challenges submitted successfully!");
             } else {
-                // If there is an error from the server
                 alert(`Error: ${data.message}`);
             }
         } catch (error) {
-            // If there is a network error
-            console.error("Error submitting the contest:", error);
             alert("There was an error while creating the contest. Please try again.");
         }
 
-        // Reset formData and currentChallenge
         setFormData({
             contestName: "",
             startTime: "",
             endTime: "",
             challenges: [],
-        });
-        setCurrentChallenge({
-            challengeName: "",
-            problemStatement: "",
-            inputFormat: "",
-            constraints: "",
-            outputFormat: "",
         });
     };
 
@@ -121,6 +175,8 @@ const CreateContest = () => {
                     Create Contest with Challenges
                 </h2>
                 <form onSubmit={handleSubmit} className="space-y-8">
+                    {/* Contest Details */}
+                    {/* ...Existing Inputs for contestName, startTime, and endTime */}
                     <div>
                         <label className="block text-xl font-medium mb-2">Contest Name:</label>
                         <input
@@ -131,7 +187,6 @@ const CreateContest = () => {
                             className="w-full p-3 rounded bg-[#212830] border border-transparent placeholder-slate-500 focus:border-[#0DB276] focus:outline-none"
                         />
                     </div>
-
                     <div>
                         <label className="block text-xl font-medium mb-2">Start Time:</label>
                         <input
@@ -142,7 +197,6 @@ const CreateContest = () => {
                             className="w-full p-3 rounded bg-[#212830] border border-transparent placeholder-slate-500 focus:border-[#0DB276] focus:outline-none"
                         />
                     </div>
-
                     <div>
                         <label className="block text-xl font-medium mb-2">End Time:</label>
                         <input
@@ -153,22 +207,13 @@ const CreateContest = () => {
                             className="w-full p-3 rounded bg-[#212830] border border-transparent placeholder-slate-500 focus:border-[#0DB276] focus:outline-none"
                         />
                     </div>
-
+                    {/* Challenges Section */}
                     <div className="mt-8">
                         <h3 className="text-3xl font-semibold mb-4">Challenges</h3>
                         {formData.challenges.map((challenge, index) => (
                             <div key={index} className="p-4 mb-4 rounded bg-[#212830] border border-[#0DB276]">
-                                <div className="flex justify-between items-center">
-                                    <h4 className="text-2xl">{challenge.challengeName}</h4>
-                                    <button
-                                        type="button"
-                                        onClick={() => handleRemoveChallenge(index)}
-                                        className="text-red-500 hover:text-red-700"
-                                    >
-                                        Remove
-                                    </button>
-                                </div>
-                                <p className="mt-2">{challenge.problemStatement}</p>
+                                <h4 className="text-2xl">{challenge.challengeName}</h4>
+                                <p>{challenge.problemStatement}</p>
                             </div>
                         ))}
 
@@ -185,6 +230,7 @@ const CreateContest = () => {
                         {isAddingChallenge && (
                             <div className="p-4 mt-4 rounded bg-[#212830] border border-[#0DB276]">
                                 <h4 className="text-2xl mb-4">New Challenge</h4>
+                                {/* Fields for challengeName, problemStatement, etc. */}
                                 <div>
                                     <label className="block text-lg mb-2">Challenge Name:</label>
                                     <input
@@ -201,6 +247,16 @@ const CreateContest = () => {
                                         onChange={(e) => handleChallengeChange("problemStatement", e.target.value)}
                                         className="w-full p-3 rounded bg-[#212830] border border-transparent placeholder-slate-500 focus:border-[#0DB276] focus:outline-none"
                                     ></textarea>
+                                </div>
+                                <div>
+                                    <label className="block text-lg mb-2">Points for Challenge:</label>
+                                    <input
+                                        type="number"
+                                        value={currentChallenge.points || ""}
+                                        onChange={(e) => handleChallengeChange("points", e.target.value)}
+                                        min="1"
+                                        className="w-full p-3 rounded bg-[#212830] border border-transparent placeholder-slate-500 focus:border-[#0DB276] focus:outline-none"
+                                    />
                                 </div>
                                 <div>
                                     <label className="block text-lg mb-2">Input Format:</label>
@@ -226,29 +282,73 @@ const CreateContest = () => {
                                         className="w-full p-3 rounded bg-[#212830] border border-transparent placeholder-slate-500 focus:border-[#0DB276] focus:outline-none"
                                     ></textarea>
                                 </div>
-                                <div className="flex justify-between mt-4">
+                                {/* Examples */}
+                                <div>
+                                    <h4 className="text-xl mt-4 mb-2">Examples</h4>
+                                    <input
+                                        type="text"
+                                        placeholder="Example Input"
+                                        value={currentChallenge.exampleInput}
+                                        onChange={(e) => handleChallengeChange("exampleInput", e.target.value)}
+                                        className="w-full p-3 rounded bg-[#212830] border border-transparent focus:border-[#0DB276] focus:outline-none"
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Example Output"
+                                        value={currentChallenge.exampleOutput}
+                                        onChange={(e) => handleChallengeChange("exampleOutput", e.target.value)}
+                                        className="w-full p-3 mt-2 rounded bg-[#212830] border border-transparent focus:border-[#0DB276] focus:outline-none"
+                                    />
                                     <button
                                         type="button"
-                                        onClick={handleAddChallenge}
-                                        className="py-2 px-4 bg-[#0DB276] hover:bg-green-600 text-white font-semibold tracking-wide rounded"
+                                        onClick={handleAddExample}
+                                        className="mt-2 py-2 px-4 bg-[#0DB276] text-white font-semibold rounded"
                                     >
-                                        Save Challenge
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setIsAddingChallenge(false)}
-                                        className="py-2 px-4 bg-red-500 hover:bg-red-700 text-white font-semibold tracking-wide rounded"
-                                    >
-                                        Cancel
+                                        Add Example
                                     </button>
                                 </div>
+
+                                {/* Test Cases */}
+                                <div>
+                                    <h4 className="text-xl mt-4 mb-2">Test Cases</h4>
+                                    <input
+                                        type="text"
+                                        placeholder="Test Case Input"
+                                        value={currentChallenge.testCaseInput}
+                                        onChange={(e) => handleChallengeChange("testCaseInput", e.target.value)}
+                                        className="w-full p-3 rounded bg-[#212830] border border-transparent focus:border-[#0DB276] focus:outline-none"
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Expected Output"
+                                        value={currentChallenge.testCaseOutput}
+                                        onChange={(e) => handleChallengeChange("testCaseOutput", e.target.value)}
+                                        className="w-full p-3 mt-2 rounded bg-[#212830] border border-transparent focus:border-[#0DB276] focus:outline-none"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={handleAddTestCase}
+                                        className="mt-2 py-2 px-4 bg-[#0DB276] text-white font-semibold rounded"
+                                    >
+                                        Add Test Case
+                                    </button>
+                                </div>
+                                
+                                {/* Save Challenge Button */}
+                                <button
+                                    type="button"
+                                    onClick={handleAddChallenge}
+                                    className="mt-4 py-2 px-4 bg-green-600 text-white rounded"
+                                >
+                                    Save Challenge
+                                </button>
                             </div>
                         )}
                     </div>
 
                     <button
                         type="submit"
-                        className="w-full py-3 bg-[#0DB276] hover:bg-green-600 text-white font-semibold tracking-wide rounded"
+                        className="w-full py-3 bg-[#0DB276] hover:bg-green-700 text-white font-semibold rounded"
                     >
                         Create Contest
                     </button>

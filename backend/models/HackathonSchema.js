@@ -1,16 +1,16 @@
 const mongoose = require('mongoose');
 
 // Define the schema for creating hackathon
-const createHackathonSchema = new mongoose.Schema({
-  hackathonName: {
+const HackathonSchema = new mongoose.Schema({
+  hackName: {
     type: String,
     required: true, // Required field
   },
-  teamSize: {
+  tSize: {
     type: Number,
     required: true, // Required field, should be a number
   },
-  registrationTimeline: {
+  regTime: {
     start: {
       type: Date,
       required: true, // Required field for registration start date
@@ -20,7 +20,7 @@ const createHackathonSchema = new mongoose.Schema({
       required: true, // Required field for registration end date
     },
   },
-  hackathonTimeline: {
+  hackTime: {
     start: {
       type: Date,
       required: true, // Required field for hackathon start date
@@ -30,11 +30,11 @@ const createHackathonSchema = new mongoose.Schema({
       required: true, // Required field for hackathon end date
     },
   },
-  allowVideoLink: {
+  allVidLink: {
     type: Boolean,
     default: false, // Default value set to false
   },
-  allowLiveDeploymentLink: {
+  allLiveDepLink: {
     type: Boolean,
     default: false, // Default value set to false
   },
@@ -44,19 +44,19 @@ const createHackathonSchema = new mongoose.Schema({
         type: String,
         required: true, // Required field for theme title
       },
-      description: {
+      desc: {
         type: String,
         required: true, // Required field for theme description
       },
     },
   ],
-  createdAt: {
+  ct: {
     type: Date,
     default: Date.now, // Automatically sets the creation date
   },
 });
 
 // Create a model based on the schema
-const CreateHackathon = mongoose.model('CreateHackathon', createHackathonSchema);
+const Hackathon = mongoose.model('Hackathon', HackathonSchema);
 
-module.exports = CreateHackathon;
+module.exports = Hackathon;

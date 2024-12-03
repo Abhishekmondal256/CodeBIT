@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 // Define the schema for storing email and roll number
-const studentSchema = new mongoose.Schema({
+const VerificationSchema = new mongoose.Schema({
  
-  collegeRollNumber: {
+  roll: {
     type: String,
     required: true,
     unique: true,// Ensures no duplicate roll numbers
@@ -13,13 +13,13 @@ const studentSchema = new mongoose.Schema({
     required: true,
     unique: true, // Ensures no duplicate emails
   },
-  createdAt: {
+  ct: {
     type: Date,
     default: Date.now, // Automatically sets the creation date
   },
 });
 
 // Create a model based on the schema
-const Student = mongoose.model('Student', studentSchema);
+const Verification = mongoose.model('verification', VerificationSchema);
 
-module.exports = Student;
+module.exports = Verification;

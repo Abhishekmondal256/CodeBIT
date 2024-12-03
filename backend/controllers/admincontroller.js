@@ -1,13 +1,14 @@
-const StudentSchema=require("../models/StudentSchema");
-const CreateHackathonSchema =require("../models/CreateHackathonSchema");
-const StudentRegisterSchema=require("../models/StudentRegisterSchema");
-const FormHackathon=require("../models/FormHackathon");
-const ProjectSubmission=require("../models/ProjectSubmission");
-const CreateContestSchema=require("../models/CreateContestSchema");
-const ContestRegistration=require("../models/ContestRegistrationSchema");
+const VerificationSchema=require("../models/VerificationSchema");
+const HackathonSchema =require("../models/HackathonSchema");
+const userSchema=require("../models/userSchema");
+
+
+const ContestSchema=require("../models/ContestSchema");
+
 const registerMain = async(req, res) => {
-    const { collegeRollNumber, email } = req.body; // Extract user data from the request body
-    if (!collegeRollNumber|| !email) {
+    const { roll, email } = req.body; // Extract user data from the request body
+  
+    if (!roll|| !email) {
         return res.status(400).json({
           message: "rollNumber and email are required",
         });
@@ -16,12 +17,12 @@ const registerMain = async(req, res) => {
     try {
         // Check for duplicates before saving
         
-        const existingStudent = await StudentSchema.findOne({ collegeRollNumber });
+        const existingStudent = await VerificationSchema.findOne({ roll });
         if (existingStudent) {
           return res.status(409).json({ message: "College Roll Number already exists" });
         }
     
-        const newStudent = new StudentSchema({ collegeRollNumber, email });
+        const newStudent = new VerificationSchema({ roll, email });
         const savedStudent = await newStudent.save();
     
         res.status(201).json({ message: "Student added successfully", student: savedStudent });
@@ -115,13 +116,13 @@ const hackathonCreate = async (req, res) => {
       
 
         // Create a new hackathon instance
-        const newHackathon = new CreateHackathonSchema({
-            hackathonName,
-            teamSize,
-            registrationTimeline,
-            hackathonTimeline,
-            allowVideoLink,
-            allowLiveDeploymentLink,
+        const newHackathon = new HackathonSchema({
+          hackName:hackathonName,
+          tSize: teamSize,
+          regTime:registrationTimeline,
+          hackTime: hackathonTimeline,
+          allVidLink:allowVideoLink,
+          allLiveDepLink:allowLiveDeploymentLink,
             themes,
         });
        
@@ -147,7 +148,7 @@ const getThemes=async(req,res)=>{
       // Validate ObjectId
       
 
-      const hackathon = await CreateHackathonSchema.findById(id);
+      const hackathon = await HackathonSchema.findById(id);
       if (!hackathon) {
           return res.status(404).json({ message: "Hackathon not found" });
       }
@@ -171,15 +172,16 @@ catch (error) {
           // Extract the hackathon ID from route parameters
           
           const { id} = req.params;
-        
+          
           // Extract the team registration data from the request body
           const {
               teamName,
               teamLeader,
               teamMembers,
               selectedProblem,
-              projectDescription,
+            
           } = req.body;
+       
          
           // Validate the required fields
           if (!teamName || !teamLeader || !teamLeader.email || !selectedProblem) {
@@ -187,44 +189,75 @@ catch (error) {
           }
   
           // Verify the hackathon exists in the CreateHackathon collection
-          const hackathon = await CreateHackathonSchema.findById({_id:id});
+          const hackathon = await HackathonSchema.findById(id);
           
           if (!hackathon) {
               return res.status(404).json({ error: 'Hackathon not found.' });
           }
-  
-          // Ensure the team leader email is unique
-          const existingTeam = await FormHackathon.findOne({ 'teamLeader.email': teamLeader.email });
-          // console.log(existingTeam);
-          if (existingTeam) {
-              return res.status(409).json({ error: 'Team leader email is already registered.' });
-          }
-  
-          // Ensure no duplicate member emails
-          for (const member of teamMembers) {
-              const existingMember = await FormHackathon.findOne({ 'teamMembers.email': member.email });
-              if (existingMember) {
-                  return res.status(409).json({ error: `Team member email ${member.email} is already registered.` });
-              }
-          }
-  
-          // Create a new FormHackathon document
-          const newTeam = new FormHackathon({
-              hackathon: id,
-              teamName,
-              teamLeader,
-              teamMembers,
-              selectedProblem,
-              projectDescription,
+          const leaderExists = await userSchema.findOne({
+            email: teamLeader.email,
+            "hackhist.hackid": id, // Check if this hackathon ID already exists in hackhist
           });
-           
-          // Save the new team document
-          const savedTeam = await newTeam.save();
-     
-          // Respond with success
+      
+          if (leaderExists) {
+            return res.status(400).json({
+              error: "Team leader is already registered for this hackathon.",
+            });
+          }
+          for (const member of teamMembers) {
+            const memberExists = await userSchema.findOne({
+              email: member.email,
+              "hackhist.hackid": id,
+            });
+      
+            if (memberExists) {
+              return res.status(400).json({
+                error: `Team member ${member.email} is already registered for this hackathon.`,
+              });
+            }
+          }
+          const teamLeaderUpdate = {
+            $push: {
+              hackhist: {
+                hackid: id,
+                tName: teamName,
+                teamLeader,
+                teamMembers,
+                submiss: [
+                  {
+                    theme: selectedProblem,
+                    desc:"",
+                    githubLink: "",
+                    videoLink: "",
+                    liveLink: "",
+                  },
+                ],
+              },
+            },
+          };
+          // // Ensure the team leader email is unique
+          
+          await userSchema.findOneAndUpdate({ email: teamLeader.email }, teamLeaderUpdate);
+         
+          for (const member of teamMembers) {
+            const memberUpdate = {
+              $push: {
+                hackhist: {
+                  hackid: id,
+                  tName: teamName,
+                  teamLeader,
+                  teamMembers,
+                  submiss: [],
+                },
+              },
+            };
+            await userSchema.findOneAndUpdate({ email: member.email }, memberUpdate);
+          }
+          
+          
           return res.status(201).json({
               message: 'Team registered successfully.',
-              team: savedTeam,
+              
           });
       } catch (error) {
           console.error('Error during team registration:', error);
@@ -239,60 +272,85 @@ catch (error) {
 
 
 
-const getCurrentUser=async(req,res)=>{
-  const userEmail = req.user.email; // Assuming email is in req.user
-  try {
-      const user = await StudentRegisterSchema.findOne({ email: userEmail });
-      if (!user) {
-          return res.status(404).json({ error: 'User not found' });
-      }
-      return res.status(200).json(user); // Send back user details
-  } catch (error) {
-      console.error("Error fetching current user:", error);
-      return res.status(500).json({ error: 'Server error' });
-  }
+// const getCurrentUser=async(req,res)=>{
+//   const userEmail = req.user.email; // Assuming email is in req.user
+//   try {
+//       const user = await StudentRegisterSchema.findOne({ email: userEmail });
+//       if (!user) {
+//           return res.status(404).json({ error: 'User not found' });
+//       }
+//       return res.status(200).json(user); // Send back user details
+//   } catch (error) {
+//       console.error("Error fetching current user:", error);
+//       return res.status(500).json({ error: 'Server error' });
+//   }
 
-}
+// }
 const projectSubmit=async(req,res)=>{
     console.log("yaha pe");
-    const { projectName, description, githubLink, videoLink, liveLink, hackathonId, teamLeader,
-        teamMembers } = req.body;
+    
+    const {  projectName,
+      description,
+      githubLink,
+      videoLink,
+      liveLink,
+      hackathonId,
+      } = req.body;
     
     try {
-        
-        
-        const hackathon = await FormHackathon.findOne({hackathon:hackathonId});
-   
-        if (!hackathon) {
-            return res.status(404).json({ message: 'Hackathon not found' });
-        }
+    
+      const userRecord = await userSchema.findOne({
+        "hackhist.hackid": hackathonId,
+    });
 
-        // Assuming the hackathon contains the teamLeader and teamMembers details
-        const teamLeader = hackathon.teamLeader; // Get the team leader details from the hackathon document
-        const teamMembers = hackathon.teamMembers; // Get all team members for the hackathon
+    if (!userRecord) {
+        return res.status(404).json({ message: "Hackathon not found in user history" });
+    }
+    const hackathon = userRecord.hackhist.find(
+      (hack) => hack.hackid === hackathonId
+  );
 
-        // Validate the teamMembers submitted by the user (you may want to validate if the user is part of the team)
-        if (teamMembers.length !== teamMembers.length) {
-            return res.status(400).json({ message: 'The number of team members does not match the hackathon team size' });
-        }
-   
-        const projectSubmission = new ProjectSubmission({
-            projectName,
-            description,
-            githubLink,
-            videoLink,
-            liveLink,
-            hackathon: hackathonId,
-            teamLeader,
-            teamMembers,
-        });
+  if (!hackathon) {
+      return res.status(404).json({ message: "Hackathon details not found" });
+  }
+  if (!hackathon.submiss || hackathon.submiss.length === 0) {
+    return res
+        .status(400)
+        .json({ message: "No submissions found to update." });
+}
+
+const submission = hackathon.submiss[0];
+submission.desc = description || submission.desc;
+submission.githubLink = githubLink || submission.githubLink;
+submission.videoLink = videoLink || submission.videoLink;
+submission.liveLink = liveLink || submission.liveLink;
+
+// Save the updated user record
+await userRecord.save();
+
+
+
+
+console.log("ho hi gya");
+res.status(200).json({
+  message: "Project updated successfully!",
+  project: {
+      projectName,
+      description: submission.desc,
+      githubLink: submission.githubLink,
+      videoLink: submission.videoLink,
+      liveLink: submission.liveLink,
+      hackathonId,
+      teamLeader: hackathon.teamLeader,
+      teamMembers: hackathon.teamMembers,
+  },
+});
         
-        await projectSubmission.save();
+     
+   
+       
       
-        res.status(201).json({
-            message: 'Project submitted successfully!',
-            projectSubmission,
-        });
+      
     } catch (error) {
         if (error.name === 'ValidationError') {
             console.error('Validation Error:', error.errors);
@@ -311,19 +369,39 @@ const checkProjectSubmission = async (req, res) => {
   
     try {
       // Check if a project exists for the given hackathon and email
-      const submission = await ProjectSubmission.findOne({
-        hackathon: hackathonId,
+      const userRecord = await userSchema.findOne({
         $or: [
-            { 'teamLeader.email': email }, // Match with the team leader email
-            { 'teamMembers.email': email } 
+            { email }, // Match user by email
+            { "hackhist.teamLeader.email": email }, // Match as team leader
+            { "hackhist.teamMembers.email": email } // Match as a team member
         ],
-      });
+        "hackhist.hackid": hackathonId // Match the hackathon ID
+    });
+    if (!userRecord) {
+      return res.status(404).json({ message: "User or hackathon not found." });
+  }
+
+  // Find the relevant hackathon entry in the user's history
+  const hackathon = userRecord.hackhist.find(
+      (hack) => hack.hackid === hackathonId
+  );
+  if (!hackathon) {
+    return res.status(404).json({ message: "Hackathon details not found." });
+}
+
+// Check if there's a submission
+const submission = hackathon.submiss.find(
+  (sub) =>
+      sub.desc && sub.githubLink 
+);
+
+if (submission) {
+    return res.status(200).json({ submitted: true, project: submission });
+} else {
+    return res.status(200).json({ submitted: false });
+}
  
-      if (submission) {
-        return res.status(200).json({ submitted: true, project: submission });
-      } else {
-        return res.status(200).json({ submitted: false });
-      }
+    
     } catch (error) {
       console.error("Error checking project submission:", error);
       res.status(500).json({ message: "Internal server error" });
@@ -334,20 +412,39 @@ const createContest=async(req,res)=>{
 
     try {
         // Extract data from request body
-        const { contestName, startTime, endTime, challenges } = req.body;
-     
+        const { contName, startTime, endTime, problems } = req.body;
+        console.log(contName);
+        console.log(startTime);
+        console.log(endTime);
+        console.log(problems);
         // Validate required fields
-        if (!contestName || !startTime || !endTime) {
+        if (!contName || !startTime || !endTime) {
             return res.status(400).json({ message: "Contest name, start time, and end time are required." });
         }
-        const newContest = new CreateContestSchema({
-            contestName,
+      
+        const challenges= problems.map((challenge) => ({
+          pnt: challenge.pnt || 0,
+          desc: {
+              probName: challenge.desc.probName,
+              statement: challenge.desc.statement,
+              inpForm: challenge.desc.inpForm,
+              constraint: challenge.desc.constraint,
+              outForm: challenge.desc.outForm,
+          },
+          exmp: challenge.exmp || [],
+          testcs: challenge.testcs || [],
+      }));
+      console.log("ab to ");
+      console.log(challenges);
+        const newContest = new ContestSchema({
+            contName:contName,
             startTime: new Date(startTime),
             endTime: new Date(endTime),
-            challenges,
+            problems,
         });
-        
+       
         // Save the contest to the database
+        console.log(newContest);
         const savedContest = await newContest.save();
            console.log(savedContest);
         // Respond with the saved contest
@@ -366,19 +463,27 @@ const contestRegister=async(req,res)=>{
       console.log(email);
       console.log(contestId);
       // Check if user already registered
-      const existingRegistration = await ContestRegistration.findOne({ email, contestId });
-      if (existingRegistration) {
-          return res.status(400).json({ message: "Already registered for this contest." });
-      }
-  
+      const user = await userSchema.findOne({ email });
+      console.log(user);
+        if (!user) {
+            return res.status(404).json({ message: "User not found." });
+        }
+        const existingRegistration = user.cnthis.find((contest) => contest.cntid === contestId);
+        if (existingRegistration) {
+            return res.status(400).json({ message: "Already registered for this contest." });
+        }
+
+        // Add the contest registration to the user's cnthis array
+        user.cnthis.push({
+            cntid: contestId,
+            point: 0, // Default points (you can adjust this logic as needed)
+            submiss: [], // Initialize an empty submissions array
+        });
+     
       // Register user
-      const newRegistration = new ContestRegistration({
-          email,
-          contestId,
-      });
-      console.log(newRegistration);
-      await newRegistration.save();
-      console.log("hogya kaam");
+     
+      await user.save();
+      console.log("Registration successful:", user);
       res.status(201).json({ message: "Registered successfully." });
     } catch (error) {
         console.error("Error registering user:", error);
@@ -391,12 +496,12 @@ const contestRegister=async(req,res)=>{
   }
 
 
-module.exports = {
-  registerMain,
+ module.exports = {
+   registerMain,
   hackathonCreate,
   getThemes,
   teamRegister,
-  getCurrentUser,
+//   getCurrentUser,
   projectSubmit,
   checkProjectSubmission,
   createContest,

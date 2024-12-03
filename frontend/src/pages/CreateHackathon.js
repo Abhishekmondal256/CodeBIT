@@ -9,7 +9,7 @@ const CreateHackathon = () => {
         hackathonTimeline: { start: "", end: "" },
         allowVideoLink: false,
         allowLiveDeploymentLink: false,
-        themes: [{ title: "", description: "" }],
+        themes: [{ title: "", desc: "" }],
     });
     const userString = localStorage.getItem("user");
     let userId = "";
@@ -37,7 +37,7 @@ const CreateHackathon = () => {
     const handleAddTheme = () => {
         setFormData((prev) => ({
             ...prev,
-            themes: [...prev.themes, { title: "", description: "" }],
+            themes: [...prev.themes, { title: "", desc: "" }],
         }));
     };
 
@@ -83,7 +83,7 @@ const CreateHackathon = () => {
                 hackathonTimeline: { start: "", end: "" },
                 allowVideoLink: false,
                 allowLiveDeploymentLink: false,
-                themes: [{ title: "", description: "" }],
+                themes: [{ title: "", desc: "" }],
             });
         } catch (error) {
             console.error("Error creating hackathon:", error);
@@ -210,10 +210,10 @@ const CreateHackathon = () => {
                                         Theme Description:
                                     </label>
                                     <textarea
-                                        value={theme.description}
+                                        value={theme.desc}
                                         onChange={(e) =>
                                             handleInputChange(
-                                                `themes.${index}.description`,
+                                                `themes.${index}.desc`,
                                                 e.target.value
                                             )
                                         }

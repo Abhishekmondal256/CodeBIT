@@ -27,7 +27,7 @@ const FormHackathon = () => {
         },
         teamMembers: [{ name: "", email: "", phone: "" }],
         selectedProblem: "",
-        projectDescription: "",
+        
     });
 
     const [problemStatements, setProblemStatements] = useState([]);
@@ -92,11 +92,12 @@ const FormHackathon = () => {
         e.preventDefault();
 
         const dataToSend = {
+            hackid:hackathonId,
             teamName: formData.teamName,
             teamLeader: formData.teamLeader,
             teamMembers: formData.teamMembers,
             selectedProblem: formData.selectedProblem,
-            projectDescription: formData.projectDescription,
+            
         };
 
         try {
@@ -110,12 +111,15 @@ const FormHackathon = () => {
             });
 
             if (!response.ok) {
-                console.error(`Error submitting form: ${response.status}`);
+                const errorData = await response.json();
+                // Display the error message from the response as an alert
+                window.alert(`Error: ${errorData.error || "Unknown error occurred"}`);
                 return;
             }
 
             const result = await response.json();
             console.log("Form submitted successfully:", result);
+            window.alert("Form submitted successfully!");
 
             // Reset form state after successful submission
             setFormData({
@@ -127,10 +131,10 @@ const FormHackathon = () => {
                 },
                 teamMembers: [{ name: "", email: "", phone: "" }],
                 selectedProblem: "",
-                projectDescription: "",
+           
             });
 
-            // Optionally, reset other states
+            // // Optionally, reset other states
             setProblemStatements([]); // Clear problem statements if necessary
             setLoading(true); // Optionally reset loading state if you plan to reload any data
 
