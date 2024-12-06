@@ -125,17 +125,18 @@ const ContestHackathonElement = ({
 
     // Leaderboard Handler
     const handleLeaderboardClick = () => {
-        navigate(`/leaderboard/${hackathonId}`);
+        navigate(`/leaderboard`);
     };
 
     return (
-        <div className="flex items-center justify-between text-[15px] py-4 border border-[#293139] bg-[#21272e] rounded-lg h-[250px] px-4">
-            <div className="flex flex-col justify-center">
-                <div className="text-[30px] text-green-500 font-bold">{hackathonName}</div>
+        <div className="flex items-center justify-between text-[15px] py-4 px-8 pb-8 border border-[#293139] bg-[#21272e] rounded-lg h-full ">
+            <div className="flex flex-col justify-cente h-full">
+                
 
                 {/* Hackathon Details */}
                 {compName === "hackathon" && (
                     <>
+                         <div className="text-[30px] text-green-500 font-bold py-4">{hackathonName}</div>
                         <div>Team Size: {teamSize}</div>
                         <div>
                             <strong>Registration:</strong>{" "}
@@ -175,6 +176,7 @@ const ContestHackathonElement = ({
                 {/* Contest Details */}
                 {compName === "contest" && (
                     <>
+                    <div className="text-[30px] text-green-500 font-bold py-4">{hackathonName}</div>
                         <div>
                             <strong>Contest Date:</strong>{" "}
                             {hackathonStart
@@ -242,14 +244,21 @@ const ContestHackathonElement = ({
                     </>
                 )}
 
-                {canViewLeaderboard && userType !== "admin" && (
-                    <div
-                        onClick={handleLeaderboardClick}
-                        className="w-[120px] hover:bg-[#0a9160] cursor-pointer bg-[#0DB276] rounded-lg py-2 px-4 text-center"
-                    >
-                        Leaderboard →
-                    </div>
-                )}
+{canViewLeaderboard && userType !== "admin" && (
+    <div
+        onClick={() => {
+            if (compName === "contest") {
+                navigate(`/leaderboard`);
+            } else if (compName === "hackathon") {
+                navigate(`/hackathon-leaderboard`);
+            }
+        }}
+        className="w-[120px] hover:bg-[#0a9160] cursor-pointer bg-[#0DB276] rounded-lg py-2 px-4 text-center"
+    >
+        Leaderboard →
+    </div>
+)}
+
             </div>
         </div>
     );

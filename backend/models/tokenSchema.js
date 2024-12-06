@@ -1,10 +1,11 @@
 const mongoose=require("mongoose");
 const Schema=mongoose.Schema;
+const userSchema = require("./userSchema");
 const tokenSchema=new Schema({
 uId:{
 type:Schema.Types.ObjectId,
 required:true,
-ref:"studentRegister",
+ref:"userSchema",
 unique:true
 }
 ,

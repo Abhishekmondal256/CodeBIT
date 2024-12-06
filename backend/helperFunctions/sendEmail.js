@@ -4,7 +4,10 @@ const oAuth2Client=new google.auth.OAuth2(process.env.CLIENT_ID,process.env.CLIE
 oAuth2Client.setCredentials({refresh_token:process.env.REFRESH_TOKEN});
 module.exports=async(email,subject,text)=>{
     try{
+       
+        
         const accessToken=await oAuth2Client.getAccessToken();
+        
 const transporter=nodemailer.createTransport({
     
     service:process.env.SERVICE,
@@ -18,6 +21,7 @@ const transporter=nodemailer.createTransport({
         accessToken:accessToken
     }
 });
+console.log(transporter);
 
 const result=await transporter.sendMail({
     from:process.env.USER,
@@ -25,7 +29,7 @@ const result=await transporter.sendMail({
     subject:subject,
     text:text
 })
-
+console.log(result);
 console.log("Email sent Successfully");
     }
     catch(error){

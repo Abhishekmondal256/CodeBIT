@@ -14,7 +14,7 @@ const AddEvents = ({ feat }) => {
     return (
         <div className="border-4 border-[#393530] w-[300px] h-[320px]
          flex flex-col gap-8 items-center justify-center rounded-lg">
-            <div className="text-center text-4xl font-bold capitalize">
+            <div className="text-center text-4xl font-bold capitalize text-slate-300">
                 Organize A
                 <div className="text-green-400 py-3">{feat}</div>
             </div>

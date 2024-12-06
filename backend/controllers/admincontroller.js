@@ -1,34 +1,48 @@
 const VerificationSchema=require("../models/VerificationSchema");
 const HackathonSchema =require("../models/HackathonSchema");
 const userSchema=require("../models/userSchema");
-
+const formidable = require('formidable');
+const xlsx = require('xlsx');
+const fs = require('fs');
+const path = require('path');
 
 const ContestSchema=require("../models/ContestSchema");
 
 const registerMain = async(req, res) => {
-    const { roll, email } = req.body; // Extract user data from the request body
   
-    if (!roll|| !email) {
-        return res.status(400).json({
-          message: "rollNumber and email are required",
-        });
+  const { students } = req.body; // Extract students array from the request body
+console.log(students);
+  if (!Array.isArray(students) || students.length === 0) {
+    return res.status(400).json({ message: "No student data provided" });
+  }
+
+  try {
+    const results = [];
+    for (const student of students) {
+      const { roll, email } = student;
+
+      if (!roll || !email) {
+        results.push({ roll, status: "failed", reason: "Missing roll or email" });
+        continue;
       }
-    // Create a new student document using the Student model
-    try {
-        // Check for duplicates before saving
-        
-        const existingStudent = await VerificationSchema.findOne({ roll });
-        if (existingStudent) {
-          return res.status(409).json({ message: "College Roll Number already exists" });
-        }
-    
-        const newStudent = new VerificationSchema({ roll, email });
-        const savedStudent = await newStudent.save();
-    
-        res.status(201).json({ message: "Student added successfully", student: savedStudent });
-      } catch (error) {
-        res.status(500).json({ message: "Failed to add student", error: error.message });
+      const existingStudent = await VerificationSchema.findOne({ roll });
+      if (existingStudent) {
+        results.push({ roll, status: "failed", reason: "Duplicate roll number" });
+        continue;
       }
+
+      const newStudent = new VerificationSchema({ roll, email });
+      await newStudent.save();
+      results.push({ roll, status: "success" });
+    }
+    res.status(201).json({
+      message: "Students processed",
+      results,
+    });
+  } catch (error) {
+    console.error("Error saving students:", error);
+    res.status(500).json({ message: "Failed to process students", error: error.message });
+  }
    
       
 };
@@ -494,7 +508,64 @@ const contestRegister=async(req,res)=>{
   
   
   }
+const excelUpload=async(req,res)=>{
+  const form = new formidable.IncomingForm();
+    form.keepExtensions = true; // Keep file extensions
+    form.multiples = false; // Expect a single file
+console.log("form",form);
+    form.parse(req, async (err, fields, files) => {
+        if (err) {
+            console.error('Error parsing form:', err);
+            return res.status(500).json({ message: 'Error processing the form.' });
+        }
+          
+        const uploadedFile = files.file;
+        console.log("up",uploadedFile);
+        if (!uploadedFile) {
+            return res.status(400).json({ message: 'No file uploaded.' });
+        }
 
+        try {
+            // Read the uploaded Excel file
+            let fileBuffer;
+            if (uploadedFile.buffer) {
+                // If buffer exists, use it directly
+                fileBuffer = uploadedFile.buffer;
+            } else if (uploadedFile.filepath) {
+                // If filepath exists, read the file (not needed if you don't store files)
+                fileBuffer = await fs.promises.readFile(uploadedFile.filepath);
+            } else {
+                return res.status(400).json({ message: 'Uploaded file is invalid.' });
+            }
+             console.log("file",fileBuffer);
+            // Parse the Excel file using xlsx
+            const workbook = xlsx.read(fileBuffer, { type: 'buffer' });
+            console.log("work",workbook);
+            const sheetName = workbook.SheetNames[0]; // Assuming data is in the first sheet
+            console.log("sheet",sheetName);
+            const sheetData = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
+             console.log("shtd",sheetData);
+            // Extract specific fields (RollNumber and Email)
+            const extractedData = sheetData.map((row) => ({
+                rollNumber: row.CollegeRollNo || row['CollegeRollNo'], // Match column headers
+                email: row.Email || row['Email'],
+            }));
+   console.log("ext",extractedData);
+            // Send response back to the frontend
+            return res.status(200).json({
+                message: 'File processed successfully!',
+                data: extractedData,
+            });
+        } catch (error) {
+            console.error('Error processing file:', error);
+            return res.status(500).json({ message: 'Failed to process the uploaded file.' });
+        }
+    });
+
+
+
+
+}
 
  module.exports = {
    registerMain,
@@ -505,5 +576,6 @@ const contestRegister=async(req,res)=>{
   projectSubmit,
   checkProjectSubmission,
   createContest,
-  contestRegister
+  contestRegister,
+  excelUpload
 };

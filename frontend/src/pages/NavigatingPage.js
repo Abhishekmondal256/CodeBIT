@@ -5,7 +5,7 @@ import ProjectSubmission from "./ProjectSubmission";
 import FormHackathon from "./FormHackathon";
 import CreateHackathon from "./CreateHackathon";
 import CreateContest from "./CreateContest";
-
+import LeaderBoard from "../components/LeaderBoard";
 import Home from "./Home";
 import Login from "./Login";
 import SignUp from "./SignUp";
@@ -27,7 +27,8 @@ function NavigatingPage() {
                 <Route path="/:feat" element={<ContestHackathon />} />
                 <Route path="/users/:id/verify/:token" element={<Emailverify />} />
                 <Route path="/teamregister/:hackathonId" element={<FormHackathon />} />
-               <Route path="/projectsubmit/:hackathonId" element={<ProjectSubmission />} />                    
+                <Route path="/projectsubmit/:hackathonId" element={<ProjectSubmission />} />  
+                <Route path="/leaderboard" element={<LeaderBoard/>}/>                  
             </Routes>
         </div>
     );

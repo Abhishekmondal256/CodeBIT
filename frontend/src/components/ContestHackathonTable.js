@@ -81,7 +81,7 @@ const ContestHackathonTable = ({ UP ,feat}) => {
             const isRegistered = userRegistrations.includes(_id); // Check if the user is registered
             
             return (
-                <div key={_id}  className="flex flex-col py-4 rounded-lg p-4 w-[750px]">
+                <div key={_id}  className="flex flex-col  rounded-lg p-4 w-[750px]">
                     <ContestHackathonElement
                         compName="hackathon"
                         hackathonId={_id}
@@ -97,16 +97,16 @@ const ContestHackathonTable = ({ UP ,feat}) => {
 
     const renderContestList = () =>
        
-        contests.map(({ _id, contestName, startTime, endTime }) => {
+        contests.map(({ _id, contName, startTime, endTime }) => {
             
             const isRegistered = userRegistrationscontest.some(reg => reg.contestId === _id);
            
             return (
-                <div key={_id} className="flex flex-col py-4 rounded-lg p-4 w-[750px]">
+                <div key={_id} className="flex flex-col rounded-lg p-4 w-[750px]">
                     <ContestHackathonElement
                         compName="contest"
                         hackathonId={_id}
-                        hackathonName={contestName}
+                        hackathonName={contName}
                         hackathonTimeline={{ start: startTime, end: endTime }}
                         isRegistered={isRegistered}
                     />
