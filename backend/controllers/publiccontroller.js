@@ -189,7 +189,8 @@ module.exports = {
   getUserRegisteredHackathons,
   showHackathons,
   showContest,
-  getUserRegisteredContests
+  getUserRegisteredContests,
+  
   
  
 };

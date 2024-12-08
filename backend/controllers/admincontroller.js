@@ -566,7 +566,18 @@ console.log("form",form);
 
 
 }
+const getContestProblems=async(req,res)=>{
+  const contestId = req.params.id;
+  try {
+    const contest = await ContestSchema.findById(contestId);
+    res.json(contest); // Returns the contest data including problems
+} catch (err) {
+    res.status(500).json({ message: "Failed to load contest problems" });
+}
 
+
+
+}
  module.exports = {
    registerMain,
   hackathonCreate,
@@ -577,5 +588,6 @@ console.log("form",form);
   checkProjectSubmission,
   createContest,
   contestRegister,
-  excelUpload
+  excelUpload,
+  getContestProblems
 };

@@ -10,7 +10,8 @@ import Home from "./Home";
 import Login from "./Login";
 import SignUp from "./SignUp";
 import Emailverify from "./Emailverify"; 
-
+import HackathonmanagePage from "./HackathonmanagePage.js";
+import ContestProblemPage from "./ContestProblemPage.js";
 function NavigatingPage() {
    
     return (
@@ -28,7 +29,9 @@ function NavigatingPage() {
                 <Route path="/users/:id/verify/:token" element={<Emailverify />} />
                 <Route path="/teamregister/:hackathonId" element={<FormHackathon />} />
                 <Route path="/projectsubmit/:hackathonId" element={<ProjectSubmission />} />  
-                <Route path="/leaderboard" element={<LeaderBoard/>}/>                  
+                <Route path="/leaderboard" element={<LeaderBoard/>}/>    
+                <Route path="/managehackathon/:hackathonId" element={<HackathonmanagePage />} />  
+                <Route path="/contestproblempage" element={<ContestProblemPage />} />            
             </Routes>
         </div>
     );

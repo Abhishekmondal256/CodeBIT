@@ -1,6 +1,6 @@
 const express = require("express");
 const router= express.Router();
-const {registerMain,hackathonCreate,createContest,getThemes,teamRegister,projectSubmit,checkProjectSubmission,contestRegister,excelUpload}=require("../controllers/admincontroller");
+const {registerMain,hackathonCreate,createContest,getThemes,teamRegister,projectSubmit,checkProjectSubmission,contestRegister,excelUpload,getContestProblems}=require("../controllers/admincontroller");
 
 router.post("/registermain",registerMain);
 router.post("/hackathon/create",hackathonCreate);
@@ -13,4 +13,5 @@ router.post("/register-contest",contestRegister);
 router.get("/checkProjectSubmission", checkProjectSubmission);
 router.post("/createcontest",createContest);
 router.post("/upload-excel",excelUpload);
+router.get("/contestproblems/:id",getContestProblems);
 module.exports= router;

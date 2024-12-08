@@ -113,14 +113,28 @@ const ContestHackathonElement = ({
     const handleEnterClick = () => {
         if (!user) {
             navigate("/login");
-        } else {
+        } else if(compName==='hackathon') {
             navigate(`/projectsubmit/${hackathonId}`);
         }
+        else if(compName==='contest'){
+            navigate(`/contestproblempage`, {
+                state: {
+                    id: hackathonId,
+                    name: hackathonName,
+                },
+            });
+            
+        }
+
     };
 
     // Admin Manage Handler
     const handleManageClick = () => {
-        navigate(`/manage/${hackathonId}`);
+        if (compName === "hackathon") {
+            navigate(`/managehackathon/${hackathonId}`);
+        } else if (compName === "contest") {
+            navigate(`/managecontest/${hackathonId}`);
+        }
     };
 
     // Leaderboard Handler
