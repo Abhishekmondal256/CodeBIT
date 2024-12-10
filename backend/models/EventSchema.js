@@ -1,14 +1,37 @@
 const mongoose = require('mongoose');
 
 const EventSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+  },
   desc: {
     type: String,
     required: true,
-    
   },
-  ct: {
+  contactDetails: {
+    type: String,
+    required: true,
+  },
+  deadline: {
     type: Date,
-    default: Date.now, // Automatically sets the current date/time when the document is created
+    required: true,
+  },
+  organizers: [
+    {
+      name: {
+        type: String,
+        required: true,
+      },
+      contact: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
 });
 

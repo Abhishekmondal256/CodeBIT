@@ -9,6 +9,9 @@ const AddEvents = ({ feat }) => {
         } else if (feat === "contest") {
             navigate("/createcontest");
         }
+        else if (feat === "Events") {
+            navigate("/addevents");
+        }
     };
 
     return (

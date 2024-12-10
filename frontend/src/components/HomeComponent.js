@@ -39,13 +39,30 @@ const contestData = [
 
 const HomeComponent = () => {
     const [isAdmin, setIsAdmin] = useState(false);
-
+    const [events, setEvents] = useState([]);
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem("user")); // Retrieve user from localStorage
         const userType = user?.userType || null; // Get userType or set null if not logged in
         setIsAdmin(userType === "admin"); // Check if user is admin
     }, []);
-
+    useEffect(() => {
+        // Fetch events from the backend
+        const fetchEvents = async () => {
+            try {
+                const response = await fetch("http://localhost:4000/events");
+                if (response.ok) {
+                    const data = await response.json();
+                    setEvents(data); // Store events in state
+                } else {
+                    console.error("Failed to fetch events");
+                }
+            } catch (error) {
+                console.error("Error fetching events:", error);
+            }
+        };
+        fetchEvents();
+    }, []);
+   
     return (
         <div className="flex flex-wrap justify-between w-[1200px] ">
             <div className="flex flex-wrap w-[800px] justify-between flex-col items-center">

@@ -4,7 +4,7 @@ const ContestSchema=require("../models/ContestSchema");
 const HackathonSchema=require("../models/HackathonSchema");
 // const ContestRegistration=require("../models/ContestRegistrationSchema");
 // const CreateContestSchema=require("../models/CreateContestSchema");// Import the student register schema
-
+const EventSchema=require("../models/EventSchema");
 const Token=require("../models/tokenSchema");
 const jwt = require("jsonwebtoken");
 const sendEmail=require("../helperFunctions/sendEmail");
@@ -183,6 +183,21 @@ console.log(registeredContests);
 
 }
 
+const getEvents=async(req,res)=>{
+
+  
+    try {
+        const events = await EventSchema.find(); // Fetch all events
+        res.status(200).json(events);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error fetching events" });
+    }
+
+
+
+
+}
 module.exports = {
   registerStudent,
   loginUser,
@@ -190,6 +205,7 @@ module.exports = {
   showHackathons,
   showContest,
   getUserRegisteredContests,
+  getEvents
   
   
  

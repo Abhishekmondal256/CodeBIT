@@ -5,7 +5,7 @@ const formidable = require('formidable');
 const xlsx = require('xlsx');
 const fs = require('fs');
 const path = require('path');
-
+const EventSchema=require("../models/EventSchema");
 const ContestSchema=require("../models/ContestSchema");
 
 const registerMain = async(req, res) => {
@@ -578,6 +578,99 @@ const getContestProblems=async(req,res)=>{
 
 
 }
+const getHackathonHistory=async(req,res)=>{
+  const { hackathonId } = req.params;
+console.log(hackathonId);
+try {
+  const users = await userSchema.find({ "hackhist.hackid": hackathonId });
+
+  if (!users || users.length === 0) {
+    return res.status(404).json({ message: "Hackathon not found or no registrations found" });
+  }
+
+  // Extract the hackathon details for each user
+  const hackathonDetails = users.map(user =>
+    user.hackhist.find(hack => hack.hackid === hackathonId)
+  );
+
+  console.log(hackathonDetails);
+  res.status(200).json(hackathonDetails);
+}
+catch (error) {
+  console.error("Error fetching hackathon history:", error);
+  res.status(500).json({ message: "Server error" });
+}
+
+}
+
+  const getContestHistory = async (req, res) => {
+    const { contestId } = req.params; 
+    try {
+       // Get the contest ID from request parameters
+  
+      // Find users that have the given contestId in their cnthis array
+      const users = await userSchema.find({
+        "cnthis.cntid": contestId,  // Look inside the cnthis array for matching cntid
+      });
+  
+      // If no users found
+      if (!users || users.length === 0) {
+        return res.status(404).json({ message: "Contest not found or no registrations found" });
+      }
+    
+    const contestDetails = users.map(user => {
+            const contestInfo = user.cnthis.find(hack => hack.cntid === contestId);
+            return {
+                email: user.email,
+                roll: user.roll,
+                ...contestInfo
+            };
+        });
+
+      // Send the users' data as the response
+     
+      res.status(200).json(contestDetails);
+      
+    }catch(error){
+    console.error("Error fetching contest history:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+
+
+
+}
+const addEvents=async(req,res)=>{
+
+  try {
+    const { title, desc, contactDetails, deadline, organizers } = req.body;
+
+    // Validate request body
+    if (!title || !desc || !contactDetails || !deadline || !organizers) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    // Create a new event
+    const event = new EventSchema({
+      title,
+      desc,
+      contactDetails,
+      deadline,
+      organizers,
+    });
+
+    await event.save();
+    res.status(201).json({ message: 'Event created successfully', event });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+
+
+
+
+
+
+}
  module.exports = {
    registerMain,
   hackathonCreate,
@@ -589,5 +682,8 @@ const getContestProblems=async(req,res)=>{
   createContest,
   contestRegister,
   excelUpload,
-  getContestProblems
+  getContestProblems,
+  getHackathonHistory,
+  getContestHistory,
+  addEvents
 };
