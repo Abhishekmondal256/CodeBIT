@@ -1,35 +1,40 @@
 const mongoose = require('mongoose');
 
 const EventSchema = new mongoose.Schema({
-  title: {
+  tit: {
     type: String,
     required: true,
   },
-  desc: {
+  desc: { // Updated field name to match the "Description" input in the form
     type: String,
     required: true,
   },
-  contactDetails: {
+  eType: { // Added field for event type (Contest or Hackathon)
+    type: String,
+    enum: ['Contest', 'Hackathon'],
+    required: true,
+  },
+  contDet: { // Retained as it matches the "Contact Details" input
     type: String,
     required: true,
   },
-  deadline: {
+  deadline: { // Matches the "Deadline" input
     type: Date,
     required: true,
   },
-  organizers: [
+  org: [ // Matches the array of organizers with name and contact
     {
       name: {
         type: String,
         required: true,
       },
-      contact: {
+      cont: {
         type: String,
         required: true,
       },
     },
   ],
-  createdAt: {
+  ct: { // Default field for creation timestamp
     type: Date,
     default: Date.now,
   },

@@ -1,14 +1,12 @@
-
-
 import React, { useEffect, useState } from "react";
 import ContestHackathonElement from "./ContestHackathonElement";
 
-const ContestHackathonTable = ({ UP ,feat}) => {
-  
+const ContestHackathonTable = ({ UP, feat }) => {
+
     const [hackathons, setHackathons] = useState([]);
     const [contests, setContests] = useState([]);
     const [userRegistrations, setUserRegistrations] = useState([]);
-    const [userRegistrationscontest,setUserRegistrationscontest]=useState([]);
+    const [userRegistrationscontest, setUserRegistrationscontest] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -35,7 +33,7 @@ const ContestHackathonTable = ({ UP ,feat}) => {
                     const email = user?.userid;
                     if (email) {
                         const registrationResponse = await fetch(
-                            `http://localhost:4000/user-registrations?email=${encodeURIComponent(email)}`
+                            "http://localhost:4000/user-registrations?email=${encodeURIComponent(email)"
                         );
                         const registrationData = await registrationResponse.json();
                         setUserRegistrations(registrationData.map(reg => reg.hackid));
@@ -54,15 +52,15 @@ const ContestHackathonTable = ({ UP ,feat}) => {
                     setContests(filteredContests);
                     const user = JSON.parse(localStorage.getItem("user"));
                     const email = user?.userid;
-                     if(email){
-                         const registrationResponse = await fetch(
-                            `http://localhost:4000/user-registrationscontest?email=${encodeURIComponent(email)}`
+                    if (email) {
+                        const registrationResponse = await fetch(
+                            "http://localhost:4000/user-registrationscontest?email=${encodeURIComponent(email)"
                         );
                         const registrationData = await registrationResponse.json();
-                       
-                        setUserRegistrationscontest(registrationData.registeredContests.filter(reg => reg.contestId))
-                            
-                        }
+
+                        setUserRegistrationscontest(registrationData.registeredContests.filter(reg => reg.contestId));
+
+                    }
 
                 }
             } catch (error) {
@@ -73,15 +71,15 @@ const ContestHackathonTable = ({ UP ,feat}) => {
         };
 
         fetchData();
-    }, [UP,feat]);
+    }, [UP, feat]);
 
     const renderHackathonList = () =>
-   
-        hackathons.map(({ _id, hackName,  tSize, regTime, hackTime }) => {
+
+        hackathons.map(({ _id, hackName, tSize, regTime, hackTime }) => {
             const isRegistered = userRegistrations.includes(_id); // Check if the user is registered
-            
+
             return (
-                <div key={_id}  className="flex flex-col  rounded-lg p-4 w-[750px]">
+                <div key={_id} className="flex flex-col p-4 rounded-lg w-[100%]">
                     <ContestHackathonElement
                         compName="hackathon"
                         hackathonId={_id}
@@ -96,13 +94,13 @@ const ContestHackathonTable = ({ UP ,feat}) => {
         });
 
     const renderContestList = () =>
-       
+
         contests.map(({ _id, contName, startTime, endTime }) => {
-            
+
             const isRegistered = userRegistrationscontest.some(reg => reg.contestId === _id);
-           
+
             return (
-                <div key={_id} className="flex flex-col rounded-lg p-4 w-[750px]">
+                <div key={_id} className="flex flex-col  rounded-lg p-4 w-[100%]">
                     <ContestHackathonElement
                         compName="contest"
                         hackathonId={_id}
@@ -115,7 +113,7 @@ const ContestHackathonTable = ({ UP ,feat}) => {
         });
 
     return (
-        <div className="flex flex-col w-[750px]">
+        <div className="flex flex-col w-[100%]">
             {loading ? (
                 <p>Loading...</p>
             ) : feat === "hackathon" ? (

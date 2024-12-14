@@ -639,38 +639,47 @@ catch (error) {
 
 
 }
-const addEvents=async(req,res)=>{
-
+const addEvents = async (req, res) => {
   try {
-    const { title, desc, contactDetails, deadline, organizers } = req.body;
+    const { tit, desc, contDet, deadline, org, eType } = req.body;
 
     // Validate request body
-    if (!title || !desc || !contactDetails || !deadline || !organizers) {
-      return res.status(400).json({ error: 'All fields are required' });
+    if (!tit || !desc || !contDet || !deadline || !org || !eType) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    if (!["Contest", "Hackathon"].includes(eType)) {
+      return res
+        .status(400)
+        .json({ error: "Invalid event type. Must be 'Contest' or 'Hackathon'" });
+    }
+
+    if (!Array.isArray(org) || org.some(o => !o.name || !o.cont)) {
+      return res
+        .status(400)
+        .json({ error: "Organizers must be an array with valid name and contact fields" });
     }
 
     // Create a new event
     const event = new EventSchema({
-      title,
+      tit,
       desc,
-      contactDetails,
+      contDet,
       deadline,
-      organizers,
+      org,
+      eType,
     });
 
+    // Save to the database
     await event.save();
-    res.status(201).json({ message: 'Event created successfully', event });
+
+    res.status(201).json({ message: "Event created successfully", event });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
+    console.error("Error creating event:", err);
+    res.status(500).json({ error: "Server error" });
   }
+};
 
-
-
-
-
-
-}
  module.exports = {
    registerMain,
   hackathonCreate,
