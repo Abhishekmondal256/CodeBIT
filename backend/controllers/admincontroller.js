@@ -641,10 +641,10 @@ catch (error) {
 }
 const addEvents = async (req, res) => {
   try {
-    const { tit, desc, contDet, deadline, org, eType } = req.body;
-
+    const { tit, desc, ctEmail, ctPhone, deadline, org, eType } = req.body;
+    console.log(req.body);
     // Validate request body
-    if (!tit || !desc || !contDet || !deadline || !org || !eType) {
+    if (!tit || !desc || !ctEmail || !ctPhone || !deadline || !org || !eType) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
@@ -654,7 +654,7 @@ const addEvents = async (req, res) => {
         .json({ error: "Invalid event type. Must be 'Contest' or 'Hackathon'" });
     }
 
-    if (!Array.isArray(org) || org.some(o => !o.name || !o.cont)) {
+    if (!Array.isArray(org) || org.some((o) => !o.name || !o.cont)) {
       return res
         .status(400)
         .json({ error: "Organizers must be an array with valid name and contact fields" });
@@ -664,7 +664,8 @@ const addEvents = async (req, res) => {
     const event = new EventSchema({
       tit,
       desc,
-      contDet,
+      ctEmail,
+      ctPhone,
       deadline,
       org,
       eType,
@@ -679,6 +680,7 @@ const addEvents = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
 
  module.exports = {
    registerMain,

@@ -24,8 +24,8 @@ const UploadExcel = () => {
 
     return (
         <div
-            className="border-4 border-[#393530] w-[300px] h-[260px] 
-            flex flex-col gap-4 items-center justify-center rounded-lg  mx-4"
+            className="border-4 border-[#393530]  h-[300px] 
+            flex flex-col gap-4 items-center justify-center rounded-lg  mx-4 "
         >
             <div className="text-center text-3xl font-bold text-slate-300">
                 Upload Student

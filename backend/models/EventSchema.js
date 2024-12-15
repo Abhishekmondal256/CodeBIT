@@ -5,24 +5,28 @@ const EventSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  desc: { // Updated field name to match the "Description" input in the form
+  desc: {
     type: String,
     required: true,
   },
-  eType: { // Added field for event type (Contest or Hackathon)
+  eType: {
     type: String,
     enum: ['Contest', 'Hackathon'],
     required: true,
   },
-  contDet: { // Retained as it matches the "Contact Details" input
+  ctEmail: { // Replaced 'contDet' with specific contact fields
     type: String,
     required: true,
   },
-  deadline: { // Matches the "Deadline" input
+  ctPhone: { // Added for better clarity and separation
+    type: String,
+    required: true,
+  },
+  deadline: {
     type: Date,
     required: true,
   },
-  org: [ // Matches the array of organizers with name and contact
+  org: [
     {
       name: {
         type: String,
@@ -34,7 +38,7 @@ const EventSchema = new mongoose.Schema({
       },
     },
   ],
-  ct: { // Default field for creation timestamp
+  ct: {
     type: Date,
     default: Date.now,
   },

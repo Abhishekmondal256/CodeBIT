@@ -3,7 +3,8 @@ import React, { useState } from "react";
 const EventForm = () => {
     const [tit, setTit] = useState(""); // Schema: 'tit' for Title
     const [desc, setDesc] = useState(""); // Schema: 'desc' for Description
-    const [contDet, setContDet] = useState(""); // Schema: 'contDet' for Contact Details
+    const [ctEmail, setCtEmail] = useState(""); // Schema: 'contactEmail'
+    const [ctPhone, setCtPhone] = useState(""); // Schema: 'contactPhone'
     const [deadline, setDeadline] = useState(""); // Schema: 'deadline' for Deadline
     const [org, setOrg] = useState([{ name: "", cont: "" }]); // Schema: 'org' array
     const [eType, setEType] = useState(""); // Schema: 'eType' for Event Type
@@ -25,7 +26,7 @@ const EventForm = () => {
         e.preventDefault();
 
         // Basic Validation
-        if (!tit || !desc || !contDet || !deadline || !eType) {
+        if (!tit || !desc || !ctEmail || !ctPhone || !deadline || !eType) {
             alert("Please fill in all required fields.");
             return;
         }
@@ -40,7 +41,8 @@ const EventForm = () => {
             tit,
             desc,
             eType,
-            contDet,
+            ctEmail,
+            ctPhone,
             deadline,
             org,
         };
@@ -60,7 +62,8 @@ const EventForm = () => {
                 // Reset form fields
                 setTit("");
                 setDesc("");
-                setContDet("");
+                setCtEmail("");
+                setCtPhone("");
                 setDeadline("");
                 setOrg([{ name: "", cont: "" }]);
                 setEType("");
@@ -132,13 +135,23 @@ const EventForm = () => {
                         </div>
                     </div>
                     <div>
-                        <label className="block text-m font-medium mb-2">Contact Details</label>
+                        <label className="block text-m font-medium mb-2">Contact Email</label>
+                        <input
+                            type="email"
+                            value={ctEmail}
+                            onChange={(e) => setCtEmail(e.target.value)}
+                            className="w-full bg-[#21272e] text-slate-300 px-4 py-2 rounded-md focus:outline-none"
+                            placeholder="Email Address"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-m font-medium mb-2">Contact Phone</label>
                         <input
                             type="text"
-                            value={contDet}
-                            onChange={(e) => setContDet(e.target.value)}
+                            value={ctPhone}
+                            onChange={(e) => setCtPhone(e.target.value)}
                             className="w-full bg-[#21272e] text-slate-300 px-4 py-2 rounded-md focus:outline-none"
-                            placeholder="Contact Email/Phone"
+                            placeholder="Phone Number"
                         />
                     </div>
                     <div>

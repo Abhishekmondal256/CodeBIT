@@ -187,7 +187,7 @@ const getEvents=async(req,res)=>{
 
   
     try {
-        const events = await EventSchema.find(); // Fetch all events
+        const events = await EventSchema.find().sort({ ct: -1 }); // Fetch all events
         res.status(200).json(events);
     } catch (error) {
         console.error(error);
