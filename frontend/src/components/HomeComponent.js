@@ -55,61 +55,7 @@ const HomeComponent = () => {
                                 </p>
 
                             </div>
-                            {event.eType === 'Contest' &&
-                                <>
-                                    <div  >
-                                        <p className="text-[22px]">The Contest will feature:</p>
-                                        <ul className="text-[19px] py-2 px-8 list-inside list-disc text-slate-300">
-                                            <li>
-                                                {"question 1 : Solve all test cases to get 100 points."}
-                                            </li>
-                                            <li>
-                                                {"question 2: Solve all test cases to get 200 points."}
-                                            </li>
-                                            <li>
-                                                {"question 3: Solve all test cases to get 300 points."}
-                                            </li>
-                                            <li>
-                                                {"question 4: Solve all test cases to get 400 points."}
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div>
-                                        <p className="text-[22px]">Rules and Instructions</p>
-                                        <ul className="text-[19px] py-2 px-8 list-inside list-disc text-slate-50">
-                                            <li>
-                                                The event duration will be of 2 hours.
-                                            </li>
-                                            <li>
-                                                Coding Languages supported for the event are: C++, Java, Python, JS.
-                                            </li>
-                                            <li>
-                                                In case of technical problems, participants can contact the event administrators immediately.
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </>
-                            }
-                            {event.eType === 'Hackathon' &&
-                                <>
-                                    <div >
-                                        <p className="text-[22px]">The Hackathon will feature:</p>
-                                        <ul className="text-[19px]  py-2 px-8 list-inside list-disc text-slate-300 ">
-                                            <li>{"The first-place winner will receive a cash prize of ₹5000 and a certificate."}</li>
-                                            <li>{"The second-place winner will be awarded a trophy and a certificate."}</li>
-                                            <li>{"The third-place winner will receive a medal and a certificate."}</li>
-                                        </ul>
 
-                                    </div>
-                                    <div>
-                                        <p className="text-[22px]">Rules and Instructions:</p>
-                                        <ul className="text-[19px] py-2 px-8 list-inside list-disc text-slate-50">
-
-                                        </ul>
-                                    </div>
-                                </>
-
-                            }
                             {event.org && event.org.length > 0 && (
                                 <div className="">
                                     <p className="text-[22px] text-slate-200">Organizers:</p>
@@ -129,14 +75,7 @@ const HomeComponent = () => {
 
                         </div>
                     </div>
-                    {/* <div className="flex flex-col items-center justify-center bg-[#0DB276] hover:bg-[#0aa46c] hover:cursor-pointer transition delay-100  p-2 ">
-                        <div
-                            className="text-[18px] text-center text-slate-200 font-semibold "
-                            onClick={() => handleViewDetails(event)}
-                        >
-                            View Details
-                        </div>
-                    </div> */}
+                    
                     <div className="flex justify-around gap-4 items-center text-slate-400 py-4  mx-6">
                         <div>
                             <p className="font-semibold px-6" >

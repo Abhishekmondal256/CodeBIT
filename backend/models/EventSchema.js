@@ -9,11 +9,6 @@ const EventSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  eType: {
-    type: String,
-    enum: ['Contest', 'Hackathon'],
-    required: true,
-  },
   ctEmail: { // Replaced 'contDet' with specific contact fields
     type: String,
     required: true,

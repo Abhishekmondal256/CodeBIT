@@ -7,7 +7,7 @@ const EventForm = () => {
     const [ctPhone, setCtPhone] = useState(""); // Schema: 'contactPhone'
     const [deadline, setDeadline] = useState(""); // Schema: 'deadline' for Deadline
     const [org, setOrg] = useState([{ name: "", cont: "" }]); // Schema: 'org' array
-    const [eType, setEType] = useState(""); // Schema: 'eType' for Event Type
+   
 
     const user = JSON.parse(localStorage.getItem("user"));
     const token = user?.tokene || null;
@@ -26,7 +26,7 @@ const EventForm = () => {
         e.preventDefault();
 
         // Basic Validation
-        if (!tit || !desc || !ctEmail || !ctPhone || !deadline || !eType) {
+        if (!tit || !desc || !ctEmail || !ctPhone || !deadline ) {
             alert("Please fill in all required fields.");
             return;
         }
@@ -40,7 +40,7 @@ const EventForm = () => {
         const formData = {
             tit,
             desc,
-            eType,
+           
             ctEmail,
             ctPhone,
             deadline,
@@ -66,7 +66,7 @@ const EventForm = () => {
                 setCtPhone("");
                 setDeadline("");
                 setOrg([{ name: "", cont: "" }]);
-                setEType("");
+                
             } else {
                 const errorData = await response.json();
                 alert(`Submission failed: ${errorData.message}`);
@@ -106,33 +106,6 @@ const EventForm = () => {
                             className="w-full bg-[#21272e] text-slate-300 px-4 py-2 rounded-md focus:outline-none"
                             placeholder="Event Description"
                         ></textarea>
-                    </div>
-                    <div>
-                        <label className="block text-m font-medium mb-2">Event Type</label>
-                        <div className="flex gap-4 bg-[#21272e] p-2">
-                            <label className="flex items-center gap-2">
-                                <input
-                                    type="radio"
-                                    name="eType"
-                                    value="Contest"
-                                    checked={eType === "Contest"}
-                                    onChange={(e) => setEType(e.target.value)}
-                                    className="bg-[#21272e] focus:ring-[#0DB276]"
-                                />
-                                Contest
-                            </label>
-                            <label className="flex items-center gap-2">
-                                <input
-                                    type="radio"
-                                    name="eType"
-                                    value="Hackathon"
-                                    checked={eType === "Hackathon"}
-                                    onChange={(e) => setEType(e.target.value)}
-                                    className="bg-[#21272e] focus:ring-[#0DB276]"
-                                />
-                                Hackathon
-                            </label>
-                        </div>
                     </div>
                     <div>
                         <label className="block text-m font-medium mb-2">Contact Email</label>

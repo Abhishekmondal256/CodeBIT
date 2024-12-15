@@ -33,7 +33,7 @@ const ContestHackathonTable = ({ UP, feat }) => {
                     const email = user?.userid;
                     if (email) {
                         const registrationResponse = await fetch(
-                            "http://localhost:4000/user-registrations?email=${encodeURIComponent(email)"
+                            `http://localhost:4000/user-registrations?email=${encodeURIComponent(email)}`
                         );
                         const registrationData = await registrationResponse.json();
                         setUserRegistrations(registrationData.map(reg => reg.hackid));
@@ -54,7 +54,7 @@ const ContestHackathonTable = ({ UP, feat }) => {
                     const email = user?.userid;
                     if (email) {
                         const registrationResponse = await fetch(
-                            "http://localhost:4000/user-registrationscontest?email=${encodeURIComponent(email)"
+                            `http://localhost:4000/user-registrationscontest?email=${encodeURIComponent(email)}`
                         );
                         const registrationData = await registrationResponse.json();
 

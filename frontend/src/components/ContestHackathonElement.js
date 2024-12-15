@@ -60,7 +60,7 @@ const ContestHackathonElement = ({
 
     const isRegistrationOpen =
         userType !== "admin" && !registrationClosed && !isRegistered && hackathonEnd > currentDate;
-
+        const canViewLeaderboard = hackathonEnded;
     const handleRegisterClick = async () => {
         if (!user) {
             navigate("/login");
@@ -99,13 +99,27 @@ const ContestHackathonElement = ({
     const handleEnterClick = () => {
         if (!user) {
             navigate("/login");
-        } else {
+        } else if(compName==='hackathon') {
             navigate(`/projectsubmit/${hackathonId}`);
         }
+        else if(compName==='contest'){
+            navigate(`/contestproblempage`, {
+                state: {
+                    id: hackathonId,
+                    name: hackathonName,
+                },
+            });
+            
+        }
+
     };
 
     const handleManageClick = () => {
-        navigate(`/manage/${hackathonId}`);
+        if (compName === "hackathon") {
+            navigate(`/managehackathon/${hackathonId}`);
+        } else if (compName === "contest") {
+            navigate(`/managecontest/${hackathonId}`);
+        }
     };
 
     const handleLeaderboardClick = () => {
@@ -186,19 +200,45 @@ const ContestHackathonElement = ({
                     </div>
                 )}
 
-                {isRegistered && (
+{isRegistered && (
                     <>
-                        <div
-                            onClick={isProjectSubmitted ? null : handleEnterClick}
-                            className={`w-28 lg:w-32 ${isProjectSubmitted
-                                ? "bg-gray-500 cursor-not-allowed"
-                                : "hover:bg-[#0a9160] cursor-pointer bg-[#0DB276]"
+                        {compName === "hackathon" && (
+                            <div
+                                onClick={isProjectSubmitted ? null : handleEnterClick}
+                                className={`w-[120px] ${
+                                    isProjectSubmitted
+                                        ? "bg-gray-500 cursor-not-allowed"
+                                        : "hover:bg-[#0a9160] cursor-pointer bg-[#0DB276]"
                                 } rounded-lg py-2 px-4 text-center`}
-                        >
-                            {isProjectSubmitted ? "Project Submitted" : "Enter →"}
-                        </div>
+                            >
+                                {isProjectSubmitted ? "Project Submitted" : "Enter →"}
+                            </div>
+                        )}
+
+                        {compName === "contest" && !hackathonEnded && (
+                            <div
+                                onClick={handleEnterClick}
+                                className="w-[120px] hover:bg-[#0a9160] cursor-pointer bg-[#0DB276] rounded-lg py-2 px-4 text-center"
+                            >
+                                Enter →
+                            </div>
+                        )}
                     </>
                 )}
+{canViewLeaderboard && userType !== "admin" && (
+    <div
+        onClick={() => {
+            if (compName === "contest") {
+                navigate(`/leaderboard`);
+            } else if (compName === "hackathon") {
+                navigate(`/hackathon-leaderboard`);
+            }
+        }}
+        className="w-[120px] hover:bg-[#0a9160] cursor-pointer bg-[#0DB276] rounded-lg py-2 px-4 text-center"
+    >
+        Leaderboard →
+    </div>
+)}
             </div>
         </div>
     );

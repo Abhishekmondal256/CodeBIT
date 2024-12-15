@@ -641,18 +641,14 @@ catch (error) {
 }
 const addEvents = async (req, res) => {
   try {
-    const { tit, desc, ctEmail, ctPhone, deadline, org, eType } = req.body;
+    const { tit, desc, ctEmail, ctPhone, deadline, org} = req.body;
     console.log(req.body);
     // Validate request body
-    if (!tit || !desc || !ctEmail || !ctPhone || !deadline || !org || !eType) {
+    if (!tit || !desc || !ctEmail || !ctPhone || !deadline || !org ) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
-    if (!["Contest", "Hackathon"].includes(eType)) {
-      return res
-        .status(400)
-        .json({ error: "Invalid event type. Must be 'Contest' or 'Hackathon'" });
-    }
+    
 
     if (!Array.isArray(org) || org.some((o) => !o.name || !o.cont)) {
       return res
@@ -668,7 +664,7 @@ const addEvents = async (req, res) => {
       ctPhone,
       deadline,
       org,
-      eType,
+      
     });
 
     // Save to the database
