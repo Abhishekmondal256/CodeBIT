@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const problemSchema=require("./problemSchema");
 const ContestSchema = new mongoose.Schema({
-    contName: { type: String, required: true },
+    contName: { type: String, required: true ,unique:true,},
     startTime: { type: Date, required: true },
     endTime: { type: Date, required: true },
     problems: [problemSchema],

@@ -5,6 +5,7 @@ const HackathonSchema = new mongoose.Schema({
   hackName: {
     type: String,
     required: true, // Required field
+    unique:true,
   },
   tSize: {
     type: Number,

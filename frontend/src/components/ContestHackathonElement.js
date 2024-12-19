@@ -201,30 +201,32 @@ const ContestHackathonElement = ({
                 )}
 
 {isRegistered && (
-                    <>
-                        {compName === "hackathon" && (
-                            <div
-                                onClick={isProjectSubmitted ? null : handleEnterClick}
-                                className={`w-[120px] ${
-                                    isProjectSubmitted
-                                        ? "bg-gray-500 cursor-not-allowed"
-                                        : "hover:bg-[#0a9160] cursor-pointer bg-[#0DB276]"
-                                } rounded-lg py-2 px-4 text-center`}
-                            >
-                                {isProjectSubmitted ? "Project Submitted" : "Enter →"}
-                            </div>
-                        )}
+    <>
+        {compName === "hackathon" && !hackathonEnded && ( // Only show if hackathon has not ended
+            <div
+                onClick={isProjectSubmitted ? null : handleEnterClick}
+                className={`w-[120px] ${
+                    isProjectSubmitted
+                        ? "bg-gray-500 cursor-not-allowed"
+                        : "hover:bg-[#0a9160] cursor-pointer bg-[#0DB276]"
+                } rounded-lg py-2 px-4 text-center`}
+            >
+                {isProjectSubmitted ? "Project Submitted" : "Enter →"}
+            </div>
+        )}
 
-                        {compName === "contest" && !hackathonEnded && (
-                            <div
-                                onClick={handleEnterClick}
-                                className="w-[120px] hover:bg-[#0a9160] cursor-pointer bg-[#0DB276] rounded-lg py-2 px-4 text-center"
-                            >
-                                Enter →
-                            </div>
-                        )}
-                    </>
-                )}
+        {compName === "contest" && !hackathonEnded && (
+            <div
+                onClick={handleEnterClick}
+                className="w-[120px] hover:bg-[#0a9160] cursor-pointer bg-[#0DB276] rounded-lg py-2 px-4 text-center"
+            >
+                Enter →
+            </div>
+        )}
+    </>
+)}
+
+           
 {canViewLeaderboard && userType !== "admin" && (
     <div
         onClick={() => {

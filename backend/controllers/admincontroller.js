@@ -639,21 +639,46 @@ catch (error) {
 
 
 }
+
+
 const addEvents = async (req, res) => {
   try {
-    const { tit, desc, ctEmail, ctPhone, deadline, org} = req.body;
-    console.log(req.body);
-    // Validate request body
-    if (!tit || !desc || !ctEmail || !ctPhone || !deadline || !org ) {
+    const {
+      tit,
+      desc,
+      ctEmail,
+      ctPhone,
+      deadline,
+      org,
+      announcementType,
+      selectedEvent,
+      winnerEmail,
+    } = req.body;
+
+    // Validate required fields
+    if (!tit || !desc || !ctEmail || !ctPhone || !deadline || !org) {
       return res.status(400).json({ error: "All fields are required" });
     }
-
-    
 
     if (!Array.isArray(org) || org.some((o) => !o.name || !o.cont)) {
       return res
         .status(400)
         .json({ error: "Organizers must be an array with valid name and contact fields" });
+    }
+
+    // Validate announcement type
+    if (!["normal", "hackathon", "contest"].includes(announcementType)) {
+      return res.status(400).json({ error: "Invalid announcement type" });
+    }
+
+    // Validate winnerEmail for hackathon or contest
+    if (
+      (announcementType === "hackathon" || announcementType === "contest") &&
+      !winnerEmail
+    ) {
+      return res
+        .status(400)
+        .json({ error: "Winner email is required for hackathon or contest announcements" });
     }
 
     // Create a new event
@@ -664,7 +689,9 @@ const addEvents = async (req, res) => {
       ctPhone,
       deadline,
       org,
-      
+      announcementType,
+      selectedEvent,
+      winnerEmail: announcementType === "normal" ? undefined : winnerEmail,
     });
 
     // Save to the database
@@ -676,6 +703,9 @@ const addEvents = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
+
+
 
 
  module.exports = {
