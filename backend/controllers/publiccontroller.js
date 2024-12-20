@@ -245,6 +245,7 @@ const getTeamDetails=async(req,res)=>{
         projectName: relevantHack.submiss?.[0]?.pname || "N/A", // First submission project name
         githubLink: relevantHack.submiss?.[0]?.githubLink || "N/A",
         liveDemoLink: relevantHack.submiss?.[0]?.liveLink || "N/A",
+        videoLink:relevantHack.submiss?.[0]?.videoLink||"N/A",
         members: [
             {
                 email: relevantHack.teamLeader.email,

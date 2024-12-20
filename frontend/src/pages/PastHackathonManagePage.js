@@ -113,11 +113,11 @@ const PastHackathonManagePage = () => {
                 {viewType === "Event Details" && (
                     <>
                        
-                       <div className="w-full max-w-3xl mx-auto border border-[#0DB276] bg-[#21272e] rounded-lg shadow-lg p-6">
+                       
             {events && (
                 <div
                     
-                    className="w-full rounded-lg border-2 border-[#0DB276] bg-[#21272e] my-10"
+                    className="w-full max-w-3xl mx-auto border border-[#0DB276] bg-[#21272e] rounded-lg shadow-lg p-6 "
                 >
                     {/* Title Section */}
                     <div className="text-2xl font-bold text-slate-50 bg-[#0DB276] py-4 ">
@@ -258,8 +258,7 @@ const PastHackathonManagePage = () => {
                     </div>
                 </div >
             )}
-        </div >
-
+        
                         
                        
                       
