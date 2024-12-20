@@ -53,11 +53,12 @@ const ProjectSubmission = () => {
         // Add hackathonId to form data
         const dataToSubmit = {
             ...formData,
+            userId,
             hackathonId, // Include the hackathonId from the URL
         };
 
         try {
-            
+           console.log(dataToSubmit);
             // Send the form data to the backend using fetch
             const response = await fetch('http://localhost:4000/auth/projects/submit', {
                 method: 'POST',

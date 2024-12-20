@@ -198,6 +198,77 @@ const getEvents=async(req,res)=>{
 
 
 }
+const getAnnouncement=async(req,res)=>{
+  
+  const { announcementType, eventId } = req.params;
+  
+ 
+  try {
+    const event = await EventSchema.findOne({
+      announcementType,
+        selectedEvent: eventId,
+    });
+    if (!event) {
+        return res.status(404).json({ error: 'Event not found' });
+    }
+    
+    res.status(200).json(event);
+} catch (error) {
+    res.status(500).json({ error: 'Error fetching event' });
+}
+
+
+
+
+}
+const getTeamDetails=async(req,res)=>{
+  const { eventId, teamNames } = req.query;
+  try {
+    // Parse the teamNames query parameter
+    const teamNamesArray = JSON.parse(teamNames);
+      
+    // Fetch teams from the database
+    const users = await userSchema.find({
+      "hackhist.hackid": eventId,
+      "hackhist.tName": { $in: teamNamesArray },
+  });
+  
+  const teamData = users.map(user => {
+    const relevantHack = user.hackhist.find(
+      hack => hack.hackid === eventId && teamNamesArray.includes(hack.tName)
+  );
+
+  if (!relevantHack) return null; 
+    return {
+        teamName: relevantHack.tName,
+        projectName: relevantHack.submiss?.[0]?.pname || "N/A", // First submission project name
+        githubLink: relevantHack.submiss?.[0]?.githubLink || "N/A",
+        liveDemoLink: relevantHack.submiss?.[0]?.liveLink || "N/A",
+        members: [
+            {
+                email: relevantHack.teamLeader.email,
+                name: relevantHack.teamLeader.name,
+                phone: relevantHack.teamLeader.phone,
+            },
+            ...relevantHack.teamMembers.map(member => ({
+                email: member.email,
+                name: member.name,
+                phone: member.phone,
+            })),
+          ],
+        };
+    })
+
+  res.status(200).json(teamData);
+} catch (error) {
+    console.error("Error fetching teams:", error);
+    res.status(500).json({ error: "Failed to fetch teams" });
+}
+
+
+}
+
+
 module.exports = {
   registerStudent,
   loginUser,
@@ -205,7 +276,9 @@ module.exports = {
   showHackathons,
   showContest,
   getUserRegisteredContests,
-  getEvents
+  getEvents,
+  getAnnouncement,
+getTeamDetails,
   
   
  

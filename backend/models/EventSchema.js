@@ -3,23 +3,17 @@ const mongoose = require('mongoose');
 const EventSchema = new mongoose.Schema({
   tit: {
     type: String,
-    required: true, // Event title
+    required:true,
+    // Event title
   },
   desc: {
     type: String,
-    required: true, // Event description
-  },
-  ctEmail: {
-    type: String,
-    required: true, // Contact email
-  },
-  ctPhone: {
-    type: String,
-    required: true, // Contact phone number
+    // Event description
+    required:true,
   },
   deadline: {
     type: Date,
-    required: true, // Submission deadline
+    
   },
   org: [
     {
@@ -27,23 +21,29 @@ const EventSchema = new mongoose.Schema({
         type: String,
         required: true, // Organizer name
       },
-      cont: {
+      email: {
         type: String,
-        required: true, // Organizer contact
+        required: true, // Organizer email
+      },
+      phone: {
+        type: String,
+        required: true, // Organizer phone number
       },
     },
   ],
-  announcementType: {
+  anType: {
     type: String,
     enum: ['normal', 'hackathon', 'contest'], // Type of announcement
     required: true,
   },
-  selectedEvent: {
-    type: String, // Name of the selected event
+  selEv: {
+    type: String, // ID of the selected event
   },
-  winnerEmail: {
-    type: String, // Winner email (required for hackathon or contest announcements)
-  },
+  tNames: [
+    {
+      type: String, // Winner team names (for hackathon or contest announcements)
+    },
+  ],
   ct: {
     type: Date,
     default: Date.now, // Creation time

@@ -33,6 +33,7 @@ const ContestHackathonElement = ({
             if (!userEmail || !hackathonId) return;
 
             try {
+                
                 const response = await fetch(
                     `http://localhost:4000/auth/checkProjectSubmission?hackathonId=${hackathonId}&email=${userEmail}`,
                     {
@@ -122,9 +123,7 @@ const ContestHackathonElement = ({
         }
     };
 
-    const handleLeaderboardClick = () => {
-        navigate(`/leaderboard/${hackathonId}`);
-    };
+  
 
     return (
         <div className="flex items-center justify-between text-sm lg:text-base pt-6 px-4 pb-8 border border-[#293139] bg-[#21272e] rounded-lg h-full lg:gap-8">
@@ -202,7 +201,9 @@ const ContestHackathonElement = ({
 
 {isRegistered && (
     <>
-        {compName === "hackathon" && !hackathonEnded && ( // Only show if hackathon has not ended
+        {compName === "hackathon" && 
+            currentDate >= hackathonStart &&
+            currentDate <= hackathonEnd && ( // Only show if hackathon has not ended
             <div
                 onClick={isProjectSubmitted ? null : handleEnterClick}
                 className={`w-[120px] ${
@@ -231,9 +232,9 @@ const ContestHackathonElement = ({
     <div
         onClick={() => {
             if (compName === "contest") {
-                navigate(`/leaderboard`);
+                navigate(`/contestleaderboard/${hackathonId}`);
             } else if (compName === "hackathon") {
-                navigate(`/hackathon-leaderboard`);
+                navigate(`/hackathonleaderboard/${hackathonId}`);
             }
         }}
         className="w-[120px] hover:bg-[#0a9160] cursor-pointer bg-[#0DB276] rounded-lg py-2 px-4 text-center"

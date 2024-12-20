@@ -308,13 +308,15 @@ const projectSubmit=async(req,res)=>{
       githubLink,
       videoLink,
       liveLink,
+      userId,
       hackathonId,
       } = req.body;
-    
+    console.log(userId);
     try {
     
       const userRecord = await userSchema.findOne({
         "hackhist.hackid": hackathonId,
+        "hackhist.teamLeader.email":  userId ,
     });
 
     if (!userRecord) {
@@ -334,6 +336,7 @@ const projectSubmit=async(req,res)=>{
 }
 
 const submission = hackathon.submiss[0];
+submission.pname=projectName||submission.pname;
 submission.desc = description || submission.desc;
 submission.githubLink = githubLink || submission.githubLink;
 submission.videoLink = videoLink || submission.videoLink;
@@ -349,7 +352,7 @@ console.log("ho hi gya");
 res.status(200).json({
   message: "Project updated successfully!",
   project: {
-      projectName,
+      projectName:submission.pname,
       description: submission.desc,
       githubLink: submission.githubLink,
       videoLink: submission.videoLink,
@@ -646,62 +649,69 @@ const addEvents = async (req, res) => {
     const {
       tit,
       desc,
-      ctEmail,
-      ctPhone,
       deadline,
       org,
-      announcementType,
-      selectedEvent,
-      winnerEmail,
+      anType, // Announcement type
+      selEv,  // Selected event (ID)
+      tNames, // Winner team names
     } = req.body;
-
-    // Validate required fields
-    if (!tit || !desc || !ctEmail || !ctPhone || !deadline || !org) {
-      return res.status(400).json({ error: "All fields are required" });
-    }
-
-    if (!Array.isArray(org) || org.some((o) => !o.name || !o.cont)) {
-      return res
-        .status(400)
-        .json({ error: "Organizers must be an array with valid name and contact fields" });
-    }
-
+   console.log(req.body);
     // Validate announcement type
-    if (!["normal", "hackathon", "contest"].includes(announcementType)) {
-      return res.status(400).json({ error: "Invalid announcement type" });
+    if (!["normal", "hackathon", "contest"].includes(anType)) {
+      return res.status(400).json({ error: "Invalid announcement type." });
     }
-
-    // Validate winnerEmail for hackathon or contest
-    if (
-      (announcementType === "hackathon" || announcementType === "contest") &&
-      !winnerEmail
-    ) {
-      return res
-        .status(400)
-        .json({ error: "Winner email is required for hackathon or contest announcements" });
-    }
-
-    // Create a new event
-    const event = new EventSchema({
+    if (anType === "normal") {
+      if (!tit || !desc || !deadline) {
+        return res
+          .status(400)
+          .json({ error: "Title, description, and deadline are required for normal announcements." });
+      }
+    } else if (anType === "hackathon") {
+      // Hackathon-specific validation
+      if (!selEv || !tNames || !Array.isArray(tNames) || tNames.some((name) => !name)) {
+        return res
+          .status(400)
+          .json({
+            error: "Selected event and valid winner team names are required for hackathon announcements.",
+          });
+      }
+    } else if (anType === "contest") {
+      // Contest-specific validation
+      if (!selEv) {
+        return res
+          .status(400)
+          .json({ error: "Selected event is required for contest announcements." });
+      }}
+  
+      // Validate organizers
+      if (!Array.isArray(org) || org.some((o) => !o.name || !o.email || !o.phone)) {
+        return res.status(400).json({
+          error: "Organizers must be an array with each organizer having a name, email, and phone.",
+        });
+      }
+       // Prepare event data
+    const eventData = {
       tit,
       desc,
-      ctEmail,
-      ctPhone,
-      deadline,
+      deadline: anType === "normal" ? deadline : undefined,
       org,
-      announcementType,
-      selectedEvent,
-      winnerEmail: announcementType === "normal" ? undefined : winnerEmail,
-    });
+      anType,
+      selEv: ["hackathon", "contest"].includes(anType) ? selEv : undefined,
+      tNames: ["hackathon"].includes(anType) ? tNames : undefined,
+    };
 
-    // Save to the database
+    // Create and save event
+    const event = new EventSchema(eventData);
     await event.save();
-
-    res.status(201).json({ message: "Event created successfully", event });
+    res.status(201).json({ message: "Event created successfully!", event });
   } catch (err) {
     console.error("Error creating event:", err);
-    res.status(500).json({ error: "Server error" });
-  }
+    res.status(500).json({ error: "Server error." });
+  } 
+
+  
+
+ 
 };
 
 

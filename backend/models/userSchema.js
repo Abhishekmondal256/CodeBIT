@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema({
   hackhist: [
     {
       hackid: { type: String, required: true },
-      tName:{type:String,required:true},
+      tName:{type:String,required:true,unique:true},
       teamLeader: {
         email: {
           type: String,
@@ -71,6 +71,7 @@ const userSchema = new mongoose.Schema({
       submiss: [
         {
           theme: { type: String, required: true },
+          pname:{type:String,required:true},
           desc:{type:String,required:true},
           githubLink: {
             type: String,

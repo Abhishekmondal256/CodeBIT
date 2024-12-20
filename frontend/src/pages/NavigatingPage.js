@@ -32,12 +32,12 @@ function NavigatingPage() {
                 <Route path="/users/:id/verify/:token" element={<Emailverify />} />
                 <Route path="/teamregister/:hackathonId" element={<FormHackathon />} />
                 <Route path="/projectsubmit/:hackathonId" element={<ProjectSubmission />} />  
-                <Route path="/leaderboard" element={<LeaderBoard/>}/>    
+                <Route path="/contestleaderboard/:hackathonId" element={<LeaderBoard/>}/>    
                 <Route path="/managehackathon/:hackathonId" element={<HackathonmanagePage />} /> 
                 <Route path="/managecontest/:contestId" element={<ContestmanagePage/>}/>
                 <Route path="/contestproblempage" element={<ContestProblemPage />} />  
                 <Route path='/addevents' element={<EventForm />} />    
-                <Route path="/hackathon-leaderboard" element={<PastHackathonManagePage/>}/>      
+                <Route path="/hackathonleaderboard/:hackathonId" element={<PastHackathonManagePage/>}/>      
             </Routes>
         </div>
     );
