@@ -205,9 +205,10 @@ const getAnnouncement=async(req,res)=>{
  
   try {
     const event = await EventSchema.findOne({
-      announcementType,
-        selectedEvent: eventId,
+      anType:announcementType,
+        selEv: eventId,
     });
+    
     if (!event) {
         return res.status(404).json({ error: 'Event not found' });
     }

@@ -85,49 +85,7 @@ console.log(teamDetails);
 
                             </div>
 
-                            {/* Rank Details */}
-                            {/* {(event.type === "hackathon") && (
-                                <div>
-                                    {event.rankHolders.map((holder, idx) => (
-                                        <div
-                                            key={idx}
-                                            className={`mb-6 border-b-2 border-[#0a9160] pb-6 text-lg  text-slate-200 ${idx == 0 ? "border-t-2 border-[#0a9160] pt-6" : ""}`}
-                                        // className={`mb-6 border-b-2 border-[#0a9160] pb-6 text-lg  text-slate-200 `}
-                                        >
-                                            {/* Rank of the project */}
-                                            {/* <p className="">
-                                                Rank : {" "}<span className="text-[#0DB276] font-bold">{idx + 1}</span>
-                                            </p> */}
-
-                                            {/* <p className="">
-                                                Project Name :{"  "}
-                                                <span className="text-[#0DB276] font-semibold">{holder.projectName}</span>
-                                            </p>
-
-                                            <p className="=">
-                                                Team Name : {"  "}
-                                                <span className="font-semibold text-[#0DB276]">{holder.teamName}</span>
-                                            </p>
-
-                                            {/* Team Members */}
-                                            {/* <p className="text-[20px] text-[#0DB276] font-bold mb-2 mt-4">
-                                                Team Members:
-                                            </p> 
-                                            <div className="grid grid-cols-3 gap-4 text-[18px] p-2">
-                                                {holder.teamMembers.map((member, memberIdx) => (
-                                                    <div
-                                                        key={memberIdx}
-                                                        className={`py-1 text-center capitalize rounded ${memberIdx % 2 === 0 ? "bg-gray-500" : "bg-gray-600"
-                                                            } `}
-                                                    >
-                                                        {member}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div> */}
-                                    {/* ))}
-                                </div>
-                            )}  */}
+                     
                            
                          
                          
