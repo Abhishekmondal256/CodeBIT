@@ -109,10 +109,10 @@ const PastHackathonManagePage = () => {
     }
 
     if (error) {
-        return <div className="text-center text-red-500">{error}</div>;
+        return <div className="text-center text-red-500">{"Result Not Yet Announced"}</div>;
     }
-console.log(isRegistered);
-console.log(hackathonDetails);
+
+
    
     return (
         <div className="min-h-screen bg-[#181C21] text-slate-300 p-4 sm:p-8">
@@ -296,64 +296,96 @@ console.log(hackathonDetails);
                       
                     </>
                 )}
+{viewType === "Registered Team" && (
 
-                {viewType === "Registered Team" && (
-                    
-                     <div className="w-full max-w-3xl mx-auto border border-[#0DB276] bg-[#21272e] rounded-lg shadow-lg p-6 ">
-                      <>
-                        {/* <h2 className="text-[#0DB276] text-2xl font-bold text-center mb-6">
-                            Registered
-                        </h2>
-                        <h3 className="text-xl text-[#0DB276] font-semibold">
-                            🏆 Team Details:
-                        </h3>
-                        <p className="mt-2">Team Name: {studentData[0].tName}</p>
-                        <p>
-                            Leader: {studentData[0].teamLeader.name} (
-                            {studentData[0].teamLeader.email})
-                        </p>
-                        <p>Phone: {studentData[0].teamLeader.phone}</p>
-
-                        <h4 className="text-lg text-[#0DB276] font-semibold mt-6">
-                            👥 Team Members:
-                        </h4>
-                        {studentData[0].teamMembers.map((member, index) => (
-                            <div key={index} className="mt-2">
-                                <p>Name: {member.name}</p>
-                                <p>Email: {member.email}</p>
-                                <p>Phone: {member.phone}</p>
+                <div className="w-full max-w-3xl mx-auto border border-[#0DB276] bg-[#21272e] rounded-lg shadow-lg p-6 ">
+                    <>
+                         {isRegistered ? (
+            <div className="flex flex-col gap-4">
+                <h1 className="text-slate-300 font-bold text-xl px-2">
+                    We are thrilled to see your participation in this hackathon {events.tit}
+                </h1>
+                <div>
+                    <h3 className="text-xl text-[#0DB276] font-semibold mb-2">
+                        🏆 Team Details:
+                    </h3>
+                    <div className="px-8">
+                        <p>Team Name: <span className="font-bold">{hackathonDetails.tName}</span></p>
+                        <p>Project Name: <span className="font-bold">{hackathonDetails.submiss[0]?.theme || "N/A"}</span></p>
+                        <p>Leader Name: <span className="font-bold">{hackathonDetails.teamLeader.name}</span></p>
+                        <p>Leader Email: <span className="font-bold">{hackathonDetails.teamLeader.email}</span></p>
+                        <p>Phone: <span className="font-bold">{hackathonDetails.teamLeader.phone}</span></p>
+                    </div>
+                </div>
+                <div>
+                    <h4 className="text-lg text-[#0DB276] font-semibold mb-2">
+                        👥 Team Members:
+                    </h4>
+                    <div className="grid grid-cols-3 gap-2 text-white mt-2 px-8">
+                        <p className="font-bold text-[#0DB276]">Name</p>
+                        <p className="font-bold text-[#0DB276]">Email</p>
+                        <p className="font-bold text-[#0DB276]">Phone</p>
+                        {hackathonDetails.teamMembers.map((member, index) => (
+                            <div key={index} className="contents">
+                                <p className="text-gray-200">{member.name}</p>
+                                <p className="text-gray-200 hover:cursor-pointer">{member.email}</p>
+                                <p className="text-gray-200 hover:cursor-pointer">{member.phone}</p>
                             </div>
                         ))}
-
-                        <h4 className="text-lg text-[#0DB276] font-semibold mt-6">
-                            📊 Project Submission:
-                        </h4>
-                        <p>Project Desc: {studentData[0].submiss[0].desc}</p>
+                    </div>
+                </div>
+                <div>
+                    <h4 className="text-lg text-[#0DB276] font-semibold mb-2">
+                        📊 Project Submission:
+                    </h4>
+                    <div className="px-8 flex flex-col gap-2">
+                        <p>Project Desc: {hackathonDetails.submiss[0]?.desc || "No description provided"}</p>
                         <p>
                             GitHub:{" "}
-                            <a
-                                href={studentData[0].submiss[0].githubLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-[#0DB276] underline"
-                            >
-                                {studentData[0].submiss[0].githubLink}
-                            </a>
+                            {hackathonDetails.submiss[0]?.githubLink ? (
+                                <a
+                                    href={hackathonDetails.submiss[0].githubLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-[#0DB276] underline"
+                                >
+                                    {hackathonDetails.submiss[0].githubLink}
+                                </a>
+                            ) : (
+                                "No link provided"
+                            )}
                         </p>
                         <p>
                             Video:{" "}
-                            <a
-                                href={studentData[0].submiss[0].videoLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-[#0DB276] underline"
-                            >
-                                {studentData[0].submiss[0].videoLink}
-                            </a>
-                        </p>*/}
-                    </>
+                            {hackathonDetails.submiss[0]?.videoLink ? (
+                                <a
+                                    href={hackathonDetails.submiss[0].videoLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-[#0DB276] underline"
+                                >
+                                    {hackathonDetails.submiss[0].videoLink}
+                                </a>
+                            ) : (
+                                "No link provided"
+                            )}
+                        </p>
                     </div>
-                )} 
+                </div>
+            </div>
+        ) : (
+            <div className="flex flex-col items-center justify-center bg-gray-800 text-center rounded-lg p-6 shadow-lg mt-6">
+                <h2 className="text-2xl text-[#0DB276] font-bold mb-4">Not Registered!</h2>
+                <p className="text-gray-200 text-lg">
+                    You are not registered for this hackathon. If you believe this is a mistake, please contact the organizers for assistance.
+                </p>
+            </div>
+        )}
+
+                        
+                    </>
+                </div>
+            )}
            
         </div>
     );
