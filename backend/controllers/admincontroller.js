@@ -208,6 +208,16 @@ catch (error) {
           if (!hackathon) {
               return res.status(404).json({ error: 'Hackathon not found.' });
           }
+          const teamNameExists = await userSchema.findOne({
+            "hackhist.hackid": id,
+            "hackhist.tName": teamName,
+        });
+        if (teamNameExists) {
+          return res.status(400).json({
+              error: `The team name '${teamName}' is already registered for this hackathon.`,
+          });
+      }
+
           const leaderExists = await userSchema.findOne({
             email: teamLeader.email,
             "hackhist.hackid": id, // Check if this hackathon ID already exists in hackhist

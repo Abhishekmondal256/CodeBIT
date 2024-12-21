@@ -10,7 +10,7 @@ const HomeComponent = () => {
                 if (response.ok) {
                     const data = await response.json();
                     setEvents(data); // Store events in state
-                    console.log(data);
+                    
                     data.forEach(event => fetchTeamAndSubmissionDetails(event));
                 } else {
                     console.error("Failed to fetch events");
@@ -46,7 +46,7 @@ const HomeComponent = () => {
     }, []);
 
    
-console.log(teamDetails);
+
     return (
         <div className="homecomponentonent flex flex-col items-center w-full px-4 rounded-lg">
             {events?.map((event, index) => (

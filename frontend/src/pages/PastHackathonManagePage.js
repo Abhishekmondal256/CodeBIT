@@ -5,13 +5,17 @@ const PastHackathonManagePage = () => {
     const [viewType, setViewType] = useState("Event Details");
     const [events, setEventData] = useState(null);
     const [teamDetails, setTeamDetails] = useState({});
-    const [studentData, setStudentData] = useState(null);
+    const [hackathonDetails, setHackathonDetails] = useState(null);
+    const [isRegistered, setIsRegistered] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const anType = window.location.pathname.includes("hackathonleaderboard")
     ? "hackathon"
     : "contest";
-    
+    const user = JSON.parse(localStorage.getItem("user")); // Retrieve user from localStorage
+    const userType = user?.userType || null; // Get userType or set null if not logged in
+    const userEmail = user?.userid || null; // Get user email
+    const token = user?.tokene || null;
     useEffect(() => {
         const fetchEventData = async () => {
             try {
@@ -30,9 +34,12 @@ const PastHackathonManagePage = () => {
                
 
                 setEventData(data);
-                console.log(data);
+                
                  fetchTeamAndSubmissionDetails(data);
                 
+                 checkUserRegistration(data.selEv);
+               
+              
                     
                
 
@@ -42,6 +49,30 @@ const PastHackathonManagePage = () => {
                 setLoading(false);
             }
         };
+        const checkUserRegistration = async (eventId) => {
+            if (!userEmail) return;
+            try {
+                console.log(eventId,userEmail);
+                if(eventId && userEmail){
+                const response = await fetch(
+                    `http://localhost:4000/teams/check-registration?eventId=${eventId}&userEmail=${userEmail}`,
+                    { method: "GET", headers: { "Content-Type": "application/json" } }
+                );
+ 
+                if (response.ok) {
+                    const data = await response.json();
+                    setIsRegistered(data.isRegistered); // Update registration status
+                    if (data.isRegistered) {
+                        setHackathonDetails(data.hackathonDetails); // Store backend data
+                    } else {
+                        setHackathonDetails(null); // Clear data if not registered
+                    }
+                } else {
+                    console.error("Failed to check user registration");
+                }}
+            } catch (err) {
+                console.error("Error checking registration:", err);
+            }};
         const fetchTeamAndSubmissionDetails = async (event) => {
             try {
                 
@@ -80,8 +111,9 @@ const PastHackathonManagePage = () => {
     if (error) {
         return <div className="text-center text-red-500">{error}</div>;
     }
-
-    console.log(teamDetails);
+console.log(isRegistered);
+console.log(hackathonDetails);
+   
     return (
         <div className="min-h-screen bg-[#181C21] text-slate-300 p-4 sm:p-8">
             {/* Toggle Buttons */}
@@ -157,10 +189,10 @@ const PastHackathonManagePage = () => {
 
                            {events.anType === "hackathon" && (
     <div>
-        {console.log("Event:", events, "Team Details:", teamDetails)}
+        
         {teamDetails && Object.keys(teamDetails).length > 0 ? (
             Object.entries(teamDetails).map(([eventId, teams]) => {
-                console.log("Rendering Event ID:", eventId, "Teams:", teams);
+                
                 return (
                     <div key={eventId} className="mb-6">
                         {/* Event ID Title */}

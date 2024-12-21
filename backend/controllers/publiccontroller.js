@@ -270,6 +270,48 @@ const getTeamDetails=async(req,res)=>{
 
 }
 
+const checkRegistration=async(req,res)=>{
+ 
+    const { eventId, userEmail } = req.query;
+    try {
+        // Query the StudentRegister model to check if the user is part of the hackhist array
+        const user = await userSchema.findOne({
+            $or: [
+                { 
+                    "hackhist.hackid": eventId, 
+                    "hackhist.teamLeader.email": userEmail 
+                },
+                { 
+                    "hackhist.hackid": eventId, 
+                    "hackhist.teamMembers.email": userEmail 
+                }
+            ]
+        });
+
+        if (user) {
+            // Find the specific hackhist entry for the given eventId
+            const hackathonDetails = user.hackhist.find(
+                (hack) => hack.hackid === eventId
+            );
+            res.json({
+                isRegistered: true,
+                hackathonDetails, // Send the relevant hackhist details
+            });
+        } else {
+            res.json({
+                isRegistered: false,
+                message: "User is not registered for this hackathon.",
+            });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Error checking registration", error });
+    }
+};
+
+
+
+
+
 
 module.exports = {
   registerStudent,
@@ -281,6 +323,7 @@ module.exports = {
   getEvents,
   getAnnouncement,
 getTeamDetails,
+checkRegistration,
   
   
  
