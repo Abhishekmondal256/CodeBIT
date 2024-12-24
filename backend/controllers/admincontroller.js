@@ -724,9 +724,78 @@ const addEvents = async (req, res) => {
  
 };
 
+const getHackathonData=async(req,res)=>{
+  const { hackathonId } = req.params;
+
+  try {
+      // Find the hackathon by ID
+      const hackathon = await HackathonSchema.findById(hackathonId);
+
+      // If hackathon not found, return a 404 response
+      if (!hackathon) {
+          return res.status(404).json({ message: "Hackathon not found" });
+      }
+
+      // Return the hackathon details
+      res.status(200).json(hackathon);
+  } catch (error) {
+      console.error("Error fetching hackathon:", error);
+      res.status(500).json({ message: "Server error. Please try again later." });
+  }
 
 
 
+}
+
+const editHackathon = async (req, res) => {
+  const { hackathonId } = req.params;
+  const updatedData = req.body;
+
+  try {
+      // Find the hackathon by ID
+      const hackathon = await HackathonSchema.findById(hackathonId);
+
+      if (!hackathon) {
+          return res.status(404).json({ error: "Hackathon not found" });
+      }
+
+      // Update hackathon fields
+      hackathon.hackName = updatedData.hackathonName;
+        hackathon.tSize = updatedData.teamSize;
+        hackathon.regTime = updatedData.registrationTimeline;
+        hackathon.hackTime = updatedData.hackathonTimeline;
+        hackathon.allVidLink = updatedData.allowVideoLink;
+        hackathon.allLiveDepLink = updatedData.allowLiveDeploymentLink;
+        hackathon.themes = updatedData.themes;
+
+      // Save the updated hackathon
+      await hackathon.save();
+
+      res.status(200).json({ message: "Hackathon updated successfully", hackathon });
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Server error while updating hackathon" });
+  }
+};
+const deleteHackathon=async(req,res)=>{
+  const hackathonId = req.params.hackathonId;
+
+  try {
+      // Find and delete the hackathon
+      const deletedHackathon = await HackathonSchema.findByIdAndDelete(hackathonId);
+
+      if (!deletedHackathon) {
+          return res.status(404).json({ message: "Hackathon not found" });
+      }
+
+      return res.status(200).json({ message: "Hackathon deleted successfully" });
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Internal server error" });
+  }
+
+
+}
 
  module.exports = {
    registerMain,
@@ -742,5 +811,9 @@ const addEvents = async (req, res) => {
   getContestProblems,
   getHackathonHistory,
   getContestHistory,
-  addEvents
+  addEvents,
+  getHackathonData,
+  editHackathon,
+  deleteHackathon
+
 };

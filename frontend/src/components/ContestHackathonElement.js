@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import MyEditModal from "./EditModals";
+import MyDeleteModal from "./DeleteModals";
 import "react-toastify/dist/ReactToastify.css";
 
 const ContestHackathonElement = ({
@@ -17,14 +19,16 @@ const ContestHackathonElement = ({
     const userEmail = user?.userid || null;
     const token = user?.tokene || null;
     const navigate = useNavigate();
-
+    const [editHackathonModal, setEditHackathonModal] = useState(false);
+    const [deleteHackathonModal, setDeleteHackathonModal] = useState(false);
     const [isProjectSubmitted, setIsProjectSubmitted] = useState(false);
+    
     const currentDate = new Date();
-
+    const registrationStart = registrationTimeline?.start ? new Date(registrationTimeline.start) : null;
     const registrationEnd = registrationTimeline?.end ? new Date(registrationTimeline.end) : null;
     const hackathonStart = hackathonTimeline?.start ? new Date(hackathonTimeline.start) : null;
     const hackathonEnd = hackathonTimeline?.end ? new Date(hackathonTimeline.end) : null;
-
+    const registrationNotStarted = registrationStart && registrationStart > currentDate;
     const registrationClosed = registrationEnd && registrationEnd < currentDate;
     const hackathonEnded = hackathonEnd && hackathonEnd < currentDate;
 
@@ -123,11 +127,34 @@ const ContestHackathonElement = ({
         }
     };
 
-  
+    
+
+    const closeEditModal = () => setEditHackathonModal(false);
+    const closeDeleteModal = () => setDeleteHackathonModal(false);
 
     return (
         <div className="flex items-center justify-between text-sm lg:text-base pt-6 px-4 pb-8 border border-[#293139] bg-[#21272e] rounded-lg h-full lg:gap-8">
-            <div className="flex flex-col justify-center h-full">
+            <div className="relative flex flex-col justify-center h-full">
+                {userType === "admin" && registrationNotStarted && (
+                    <div className="flex gap-4 px-2 py-1 absolute right-2 top-2">
+                        <img
+                           src="/images/edit.png"
+                            alt="edit"
+                            onClick={() => setEditHackathonModal(true)}
+                            className="w-[20px] h-[20px] filter invert-[50%] sepia-[80%] saturate-[500%] hue-rotate-[120deg] hover:cursor-pointer hover:scale-110 active:scale-90 transition-transform duration-200"
+                        />
+                        <img
+                            src="/images/delete.png"
+                            alt="delete"
+                            onClick={() => setDeleteHackathonModal(true)}
+                            className="w-[20px] h-[20px] filter invert-[50%] sepia-[80%] saturate-[500%] hue-rotate-[120deg] hover:cursor-pointer hover:scale-110 active:scale-90 transition-transform duration-200"
+                            
+                        />
+                        {editHackathonModal && <MyEditModal closeEditModal={closeEditModal} hackathonId={hackathonId} />}
+                        {deleteHackathonModal && <MyDeleteModal closeDeleteModal={closeDeleteModal}  hackathonId={hackathonId} />}
+                    </div>
+                )}
+   
                 <div className="text-lg lg:text-2xl font-bold text-green-500 py-2">{hackathonName}</div>
 
                 {compName === "hackathon" && (

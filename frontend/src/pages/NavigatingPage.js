@@ -15,6 +15,7 @@ import ContestProblemPage from "./ContestProblemPage.js";
 import ContestmanagePage from "./ContestmanagePage.js";
 import EventForm from "./EventForm.js";
 import PastHackathonManagePage from "./PastHackathonManagePage.js";
+import EditHackathon from "./EditHackathon.js";
 function NavigatingPage() {
    
     return (
@@ -37,7 +38,8 @@ function NavigatingPage() {
                 <Route path="/managecontest/:contestId" element={<ContestmanagePage/>}/>
                 <Route path="/contestproblempage" element={<ContestProblemPage />} />  
                 <Route path='/addevents' element={<EventForm />} />    
-                <Route path="/hackathonleaderboard/:hackathonId" element={<PastHackathonManagePage/>}/>      
+                <Route path="/hackathonleaderboard/:hackathonId" element={<PastHackathonManagePage/>}/>     
+                <Route path="/edithackathon/:hackathonId" element={<EditHackathon/>}/> 
             </Routes>
         </div>
     );
