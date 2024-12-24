@@ -1,6 +1,9 @@
 const express = require("express");
 const router= express.Router();
-const {registerMain,hackathonCreate,createContest,getThemes,teamRegister,projectSubmit,checkProjectSubmission,contestRegister,excelUpload,getContestProblems,getHackathonHistory,getContestHistory,addEvents,getHackathonData,editHackathon,deleteHackathon}=require("../controllers/admincontroller");
+const {registerMain,hackathonCreate,createContest,getThemes,teamRegister,projectSubmit,
+checkProjectSubmission,contestRegister,excelUpload,getContestProblems,getHackathonHistory,
+getContestHistory,addEvents,getHackathonData,editHackathon,deleteHackathon,getContestData,
+editContest,deleteContest}=require("../controllers/admincontroller");
 
 router.post("/registermain",registerMain);
 router.post("/hackathon/create",hackathonCreate);
@@ -20,4 +23,7 @@ router.post("/addevents",addEvents);
 router.get("/hackathondata/:hackathonId",getHackathonData);
 router.post("/edit-hackathon/:hackathonId", editHackathon);
 router.delete("/deletehackathon/:hackathonId",deleteHackathon);
+router.get("/contestdata/:hackathonId",getContestData);
+router.post("/edit-contest/:hackathonId",editContest);
+router.delete("/deletecontest/:hackathonId",deleteContest);
 module.exports= router;

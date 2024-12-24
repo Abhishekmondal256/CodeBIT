@@ -21,6 +21,8 @@ const ContestHackathonElement = ({
     const navigate = useNavigate();
     const [editHackathonModal, setEditHackathonModal] = useState(false);
     const [deleteHackathonModal, setDeleteHackathonModal] = useState(false);
+    const [editContestModal, setEditContestModal] = useState(false); // New State
+    const [deleteContestModal, setDeleteContestModal] = useState(false); // New State
     const [isProjectSubmitted, setIsProjectSubmitted] = useState(false);
     
     const currentDate = new Date();
@@ -129,29 +131,52 @@ const ContestHackathonElement = ({
 
     
 
-    const closeEditModal = () => setEditHackathonModal(false);
-    const closeDeleteModal = () => setDeleteHackathonModal(false);
+    const closeEditModal = () => {
+        if (compName === "hackathon") setEditHackathonModal(false);
+        if (compName === "contest") setEditContestModal(false);
+    };
 
+    const closeDeleteModal = () => {
+        if (compName === "hackathon") setDeleteHackathonModal(false);
+        if (compName === "contest") setDeleteContestModal(false);
+    };
     return (
         <div className="flex items-center justify-between text-sm lg:text-base pt-6 px-4 pb-8 border border-[#293139] bg-[#21272e] rounded-lg h-full lg:gap-8">
             <div className="relative flex flex-col justify-center h-full">
-                {userType === "admin" && registrationNotStarted && (
+                {userType === "admin" && (
+    (compName === "hackathon" && registrationNotStarted) ||
+    (compName === "contest" && currentDate < hackathonStart)
+) && (
                     <div className="flex gap-4 px-2 py-1 absolute right-2 top-2">
                         <img
                            src="/images/edit.png"
                             alt="edit"
-                            onClick={() => setEditHackathonModal(true)}
+                            onClick={() => compName === "hackathon"
+                                ? setEditHackathonModal(true)
+                                : setEditContestModal(true)}
                             className="w-[20px] h-[20px] filter invert-[50%] sepia-[80%] saturate-[500%] hue-rotate-[120deg] hover:cursor-pointer hover:scale-110 active:scale-90 transition-transform duration-200"
                         />
                         <img
                             src="/images/delete.png"
                             alt="delete"
-                            onClick={() => setDeleteHackathonModal(true)}
+                            onClick={() => compName === "hackathon"
+                                ? setDeleteHackathonModal(true)
+                                : setDeleteContestModal(true)}
                             className="w-[20px] h-[20px] filter invert-[50%] sepia-[80%] saturate-[500%] hue-rotate-[120deg] hover:cursor-pointer hover:scale-110 active:scale-90 transition-transform duration-200"
                             
                         />
-                        {editHackathonModal && <MyEditModal closeEditModal={closeEditModal} hackathonId={hackathonId} />}
-                        {deleteHackathonModal && <MyDeleteModal closeDeleteModal={closeDeleteModal}  hackathonId={hackathonId} />}
+                        {compName === "hackathon" && editHackathonModal && (
+                                <MyEditModal closeEditModal={closeEditModal} hackathonId={hackathonId} compName="hackathon" hackathonName={hackathonName}/>
+                            )}
+                            {compName === "hackathon" && deleteHackathonModal && (
+                                <MyDeleteModal closeDeleteModal={closeDeleteModal} hackathonId={hackathonId} compName="hackathon" hackathonName={hackathonName} />
+                            )}
+                            {compName === "contest" && editContestModal && (
+                                <MyEditModal closeEditModal={closeEditModal} hackathonId={hackathonId} compName="contest" hackathonName={hackathonName}/>
+                            )}
+                            {compName === "contest" && deleteContestModal && (
+                                <MyDeleteModal closeDeleteModal={closeDeleteModal} hackathonId={hackathonId} compName="contest" hackathonName={hackathonName} />
+                            )}
                     </div>
                 )}
    

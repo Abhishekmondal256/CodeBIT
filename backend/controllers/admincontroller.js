@@ -796,7 +796,101 @@ const deleteHackathon=async(req,res)=>{
 
 
 }
+const getContestData=async(req,res)=>{
+  const { hackathonId} = req.params;
 
+    try {
+        const contest = await ContestSchema.findById(hackathonId);
+
+        if (!contest) {
+            return res.status(404).json({ message: "Contest not found" });
+        }
+
+        res.status(200).json(contest);
+    } catch (error) {
+        console.error("Error fetching contest details:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+
+
+
+}
+const editContest=async(req,res)=>{
+  const { hackathonId } = req.params;
+  
+  const { contestName, startTime, endTime, challenges } = req.body;
+
+  if (!contestName || !startTime || !endTime || !Array.isArray(challenges)) {
+      return res.status(400).json({ message: "All fields are required." });
+  }
+  try {
+    // Find the contest by hackathonId
+    const contest = await ContestSchema.findById(hackathonId);
+   
+    if (!contest) {
+        return res.status(404).json({ message: "Contest not found." });
+    }
+
+    // Update the contest details
+    contest.contName = contestName;
+        contest.startTime = new Date(startTime);
+        contest.endTime = new Date(endTime);
+        contest.problems = challenges.map(challenge => ({
+          pnt: Number(challenge.points),
+          desc: {
+              probName: challenge.challengeName,
+              statement: challenge.problemStatement,
+              inpForm: challenge.inputFormat,
+              constraint: challenge.constraints,
+              outForm: challenge.outputFormat,
+          },
+          exmp: challenge.examples.map(ex => ({
+              inp: ex.inp,
+              out: ex.out
+          })),
+          testcs: challenge.testCases.map(tc => ({
+              inp: tc.inp,
+              expout: tc.expout
+          }))
+      }));
+       
+
+    // Save the updated contest
+    const updatedContest = await contest.save();
+    
+    return res.status(200).json({ message: "Contest updated successfully!", updatedContest });
+  } catch (error) {
+      console.error("Error updating contest:", error);
+      return res.status(500).json({ message: "Failed to update contest." });
+  }
+
+
+
+}
+const deleteContest=async(req,res)=>{
+  const hackathonId = req.params.hackathonId;
+try{
+  const contest = await ContestSchema.findByIdAndDelete(hackathonId);
+        if (!contest) {
+            return res.status(404).json({ message: `Contest with ID ${hackathonId} not found.` });
+        }
+        await userSchema.updateMany(
+          { "cnthis.cntid": hackathonId }, // Filter for users who have the contest
+          { $pull: { cnthis: { cntid: hackathonId } } } // Remove the contest from the `cnthis` array
+      );
+
+      // Step 3: Send a success response
+      res.status(200).json({ message: `Contest with ID ${hackathonId} deleted successfully and removed from users.` });
+
+
+}catch(error){
+  console.error("Error deleting contest:", error);
+        res.status(500).json({ message: "Error deleting contest" });
+
+}
+
+
+}
  module.exports = {
    registerMain,
   hackathonCreate,
@@ -814,6 +908,9 @@ const deleteHackathon=async(req,res)=>{
   addEvents,
   getHackathonData,
   editHackathon,
-  deleteHackathon
+  deleteHackathon,
+  getContestData,
+  editContest,
+  deleteContest
 
 };

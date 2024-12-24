@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 
-const MyEditModal = ({ closeEditModal, hackathonId  }) => {
+const MyEditModal = ({ closeEditModal, hackathonId ,compName,hackathonName }) => {
     useEffect(() => {
         const originalStyle = window.getComputedStyle(document.body).overflowY;
         const originalPaddingRight = window.getComputedStyle(document.body).paddingRight;
@@ -30,9 +30,9 @@ const MyEditModal = ({ closeEditModal, hackathonId  }) => {
                     </p>
                 </div>
 
-                <h2 className="bg-[#0DB276] text-3xl text-center py-2 ">Hackathon Name</h2>
+                <h2 className="bg-[#0DB276] text-3xl text-center py-2 ">{hackathonName}</h2>
                 <div className="w-full flex flex-col gap-8 py-6 px-6">
-                    <p className="text-2xl text-slate-300">Do you want to edit Hackathon details?</p>
+                    <p className="text-2xl text-slate-300">Do you want to edit {compName} details?</p>
                     <div className="flex flex-wrap gap-4 items-center justify-end pr-4">
                         <button
                             className="w-[25%] px-4 py-2 text-xl border-2 border-[#0DB276] hover:bg-[#0aa46c] active:translate-y-[2px] active:bg-[#098c5a] cursor-pointer rounded-lg bg-[#0DB276] transition duration-150"
@@ -43,8 +43,11 @@ const MyEditModal = ({ closeEditModal, hackathonId  }) => {
                         <button
                             className="w-[25%] px-4 py-2 text-xl border-2 border-[#0DB276] hover:bg-[#0aa46c] active:translate-y-[2px] active:bg-[#098c5a] cursor-pointer rounded-lg bg-[#0DB276] transition duration-150"
                             onClick={() => {
-                                console.log("add redirect link -- going to edit hackathon");
-                                navigate(`/edithackathon/${hackathonId}`);
+                                if (compName === "hackathon") {
+                                    navigate(`/edithackathon/${hackathonId}`);
+                                } else if (compName === "contest") {
+                                    navigate(`/editcontest/${hackathonId}`);
+                                }
                             }}
                         >
                             Yes

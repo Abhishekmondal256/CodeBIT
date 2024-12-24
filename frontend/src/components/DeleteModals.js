@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-const MyDeleteModal = ({ closeDeleteModal ,hackathonId}) => {
+const MyDeleteModal = ({ closeDeleteModal ,hackathonId ,compName,hackathonName}) => {
     const user = JSON.parse(localStorage.getItem("user")); // Retrieve user from localStorage
     const userType = user?.userType || null;
     const userEmail = user?.userid || null;
@@ -21,6 +21,42 @@ const MyDeleteModal = ({ closeDeleteModal ,hackathonId}) => {
         };
     }, []);
 
+    const handleDelete = async () => {
+        try {
+            // Dynamically decide the endpoint based on compName
+            const deleteEndpoint =
+                compName === "hackathon"
+                    ? `http://localhost:4000/auth/deletehackathon/${hackathonId}`
+                    : compName === "contest"
+                    ? `http://localhost:4000/auth/deletecontest/${hackathonId}`
+                    : null;
+
+            if (!deleteEndpoint) {
+                console.error("Invalid compName provided.");
+                return;
+            }
+
+            const response = await fetch(deleteEndpoint, {
+                method: "DELETE",
+                headers: {
+                    Authorization: token, // Use your auth mechanism
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to delete the ${compName}`);
+            }
+
+            const result = await response.json();
+            console.log(result.message);
+            closeDeleteModal(); // Close the modal after successful deletion
+            // Optionally, refresh the list or redirect the user
+        } catch (error) {
+            console.error(`Error deleting ${compName}:`, error);
+        }
+    };
+
+
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
             <div className="relative bg-[#1F252B] w-[30vw] text-slate-50 rounded-lg border-[4px] border-[#0DB276]">
@@ -33,9 +69,9 @@ const MyDeleteModal = ({ closeDeleteModal ,hackathonId}) => {
                     </p>
                 </div>
 
-                <h2 className="bg-[#0DB276] text-3xl text-center py-2 ">Hackathon Name</h2>
+                <h2 className="bg-[#0DB276] text-3xl text-center py-2 ">{hackathonName}</h2>
                 <div className="w-full flex flex-col gap-8 py-6 px-6">
-                    <p className="text-2xl text-slate-300">Are you sure you want to proceed with deleting this hackathon program?</p>
+                    <p className="text-2xl text-slate-300">Are you sure you want to proceed with deleting this {compName} program?</p>
 
                     <div className="flex flex-wrap gap-4 items-center justify-end pr-4">
                         <button
@@ -46,27 +82,7 @@ const MyDeleteModal = ({ closeDeleteModal ,hackathonId}) => {
                         </button>
                         <button
                             className="w-[25%] px-4 py-2 text-xl border-2 border-[#0DB276] hover:bg-[#0aa46c] active:translate-y-[2px] active:bg-[#098c5a] cursor-pointer rounded-lg bg-[#0DB276] transition duration-150"
-                            onClick={async () => {
-                                try {
-                                    const response = await fetch(`http://localhost:4000/auth/deletehackathon/${hackathonId}`, {
-                                        method: 'DELETE',
-                                        headers: {
-                                            Authorization: token, // Use your auth mechanism
-                                        },
-                                
-                                    });
-                                    if (!response.ok) {
-                                        throw new Error("Failed to delete the hackathon");
-                                    }
-                        
-                                    const result = await response.json();
-                                    console.log(result.message);
-                                    closeDeleteModal(); // Close the modal after successful deletion
-                                    // Optionally, refresh the list or redirect the user
-                                } catch (error) {
-                                    console.error("Error deleting hackathon:", error);
-                                }
-                            }}
+                            onClick={handleDelete}
                                 
                         >
                             Yes
