@@ -29,6 +29,8 @@ const MyDeleteModal = ({ closeDeleteModal ,hackathonId ,compName,hackathonName})
                     ? `http://localhost:4000/auth/deletehackathon/${hackathonId}`
                     : compName === "contest"
                     ? `http://localhost:4000/auth/deletecontest/${hackathonId}`
+                    :compName==="Event"
+                    ? `http://localhost:4000/auth/deleteevent/${hackathonId}`
                     : null;
 
             if (!deleteEndpoint) {
@@ -48,11 +50,12 @@ const MyDeleteModal = ({ closeDeleteModal ,hackathonId ,compName,hackathonName})
             }
 
             const result = await response.json();
-            console.log(result.message);
+            alert(`Successfully deleted the ${compName}!`);
             closeDeleteModal(); // Close the modal after successful deletion
             // Optionally, refresh the list or redirect the user
         } catch (error) {
             console.error(`Error deleting ${compName}:`, error);
+            alert(`Error deleting the ${compName}: ${error.message}`);
         }
     };
 

@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 
 const MyEditModal = ({ closeEditModal, hackathonId ,compName,hackathonName }) => {
+   
     useEffect(() => {
         const originalStyle = window.getComputedStyle(document.body).overflowY;
         const originalPaddingRight = window.getComputedStyle(document.body).paddingRight;
@@ -47,6 +48,10 @@ const MyEditModal = ({ closeEditModal, hackathonId ,compName,hackathonName }) =>
                                     navigate(`/edithackathon/${hackathonId}`);
                                 } else if (compName === "contest") {
                                     navigate(`/editcontest/${hackathonId}`);
+                                }
+                                else if(compName==="Event"){
+                                    navigate(`/editevent/${hackathonId}`);
+
                                 }
                             }}
                         >

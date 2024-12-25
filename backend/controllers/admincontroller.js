@@ -891,6 +891,82 @@ try{
 
 
 }
+const getEventData=async(req,res)=>{
+  const hackathonId = req.params.hackathonId;
+  try {
+    
+    const event = await EventSchema.findById(hackathonId);
+    if (!event) {
+        return res.status(404).send({ error: 'Event not found' });
+    }
+    
+    res.send(event);
+    
+} catch (error) {
+    res.status(500).send({ error: 'Server error' });
+}
+
+
+
+
+}
+const editEvent=async(req,res)=>{
+  console.log(req.params);
+  const  hackathonId = req.params.hackathonId;
+  console.log(hackathonId);
+  const {
+      tit,
+      desc,
+      deadline,
+      org,
+      anType,
+      tNames,
+  } = req.body;
+  try {
+    // Find the event by hackathonId
+    const event = await EventSchema.findById(hackathonId);
+    if (!event) {
+        return res.status(404).json({ error: "Event not found" });
+    }
+
+    // Update event details
+    event.tit = tit || event.tit;
+    event.desc = desc || event.desc;
+    event.deadline = deadline || event.deadline;
+    event.org = org.length > 0 ? org : event.org;
+    event.anType = anType || event.anType;
+    event.tNames = tNames && tNames.length > 0 ? tNames : event.tNames;
+    await event.save();
+
+    // Send a success response
+    res.status(200).json({ message: "Event updated successfully!" });
+} catch (error) {
+    console.error("Error updating event:", error);
+    res.status(500).json({ error: "An error occurred while updating the event. Please try again." });
+}
+
+
+}
+const deleteEvent=async(req,res)=>{
+  const hackathonId  = req.params.hackathonId;
+
+  try {
+    // Find and delete the event by ID
+    const deletedEvent = await EventSchema.findByIdAndDelete(hackathonId);
+
+    if (!deletedEvent) {
+        return res.status(404).json({ error: "Event not found" });
+    }
+
+    // Respond with a success message
+    res.status(200).json({ message: "Event deleted successfully!" });
+} catch (error) {
+    console.error("Error deleting event:", error);
+    res.status(500).json({ error: "An error occurred while deleting the event. Please try again." });
+}
+
+
+}
  module.exports = {
    registerMain,
   hackathonCreate,
@@ -911,6 +987,9 @@ try{
   deleteHackathon,
   getContestData,
   editContest,
-  deleteContest
+  deleteContest,
+  getEventData,
+  editEvent,
+  deleteEvent
 
 };

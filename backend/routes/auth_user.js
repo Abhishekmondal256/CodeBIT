@@ -3,7 +3,7 @@ const router= express.Router();
 const {registerMain,hackathonCreate,createContest,getThemes,teamRegister,projectSubmit,
 checkProjectSubmission,contestRegister,excelUpload,getContestProblems,getHackathonHistory,
 getContestHistory,addEvents,getHackathonData,editHackathon,deleteHackathon,getContestData,
-editContest,deleteContest}=require("../controllers/admincontroller");
+editContest,deleteContest,getEventData,editEvent,deleteEvent}=require("../controllers/admincontroller");
 
 router.post("/registermain",registerMain);
 router.post("/hackathon/create",hackathonCreate);
@@ -26,4 +26,7 @@ router.delete("/deletehackathon/:hackathonId",deleteHackathon);
 router.get("/contestdata/:hackathonId",getContestData);
 router.post("/edit-contest/:hackathonId",editContest);
 router.delete("/deletecontest/:hackathonId",deleteContest);
+router.get("/eventdata/:hackathonId",getEventData);
+router.put("/edit-event/:hackathonId",editEvent);
+router.delete("/deleteevent/:hackathonId",deleteEvent);
 module.exports= router;
