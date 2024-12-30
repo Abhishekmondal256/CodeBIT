@@ -102,8 +102,11 @@ const ContestHackathonElement = ({
                     throw new Error("Registration failed");
                 }
 
-                toast.success("Successfully registered for the contest!", { position: "top-center" });
-                navigate("/contest");
+                toast.success("Successfully registered for the contest!", {
+                    position: "top-center",
+                    onClose: () => window.location.reload(), 
+                });
+                
             } catch (error) {
                 console.error("Error registering:", error);
                 toast.error("Registration failed. Try again later.", { position: "top-center" });
@@ -120,12 +123,12 @@ const ContestHackathonElement = ({
             navigate(  `/projectsubmit/${hackathonId}`);
         }
         else if (compName === 'contest') {
-            navigate(`/contestproblempage, {
+            navigate(`/contestproblempage`, {
                 state: {
                     id: hackathonId,
                     name: hackathonName,
                 },
-            }`);
+            });
 
         }
 
@@ -240,13 +243,13 @@ const ContestHackathonElement = ({
                         </div>
                     </>
                 )}
-                {userType === "admin" && (
+                { (
                     (compName === "hackathon" && registrationNotStarted) ||
                     (compName === "contest" && currentDate < hackathonStart)
                 ) && (
                         <div className="font-bold flex items-center gap-4 ">
                             <p>Start in : </p>
-                            <RegTimer deadline={deadline}/>
+                            <RegTimer deadline={deadline} compName={compName}/>
                         </div>
                     )}
 

@@ -93,7 +93,7 @@ const ContestProblemPage = () => {
             <div className="flex flex-col items-end p-4 w-[300px] space-y-4 mr-8">
                 
                     <button
-                        onClick={() => navigate("/leaderboard")}
+                        onClick={() => navigate(`/contestleaderboard/${id}`)}
                         className="bg-[#0DB276] hover:bg-[#0a9160] text-white py-2 px-6 rounded-lg"
                     >
                         Leaderboard →

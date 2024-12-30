@@ -31,13 +31,16 @@ const ContestHackathonTable = ({ UP, feat }) => {
                     // Fetch user registrations for hackathons
                     const user = JSON.parse(localStorage.getItem("user"));
                     const email = user?.userid;
-                    if (email) {
+                    const userType=user?.userType;
+                  
+                    if (email ) {
+                       
                         const registrationResponse = await fetch(
                             `http://localhost:4000/user-registrations?email=${encodeURIComponent(email)}`
                         );
                         const registrationData = await registrationResponse.json();
-                        setUserRegistrations(registrationData.map(reg => reg.hackid));
-                    }
+                        setUserRegistrations(registrationData.map(reg => reg.hackid));}
+                    
                 } else if (feat === "contest") {
                     // Fetch contests
                     const contestResponse = await fetch("http://localhost:4000/contests");
@@ -52,15 +55,19 @@ const ContestHackathonTable = ({ UP, feat }) => {
                     setContests(filteredContests);
                     const user = JSON.parse(localStorage.getItem("user"));
                     const email = user?.userid;
-                    if (email) {
+                    const userType=user?.userType;
+                 
+                    if (email ) {
+                        
                         const registrationResponse = await fetch(
                             `http://localhost:4000/user-registrationscontest?email=${encodeURIComponent(email)}`
                         );
                         const registrationData = await registrationResponse.json();
 
                         setUserRegistrationscontest(registrationData.registeredContests.filter(reg => reg.contestId));
-
+                    
                     }
+                    
 
                 }
             } catch (error) {
