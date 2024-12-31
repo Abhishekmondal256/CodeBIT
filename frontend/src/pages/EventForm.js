@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import useEmailBroadcast from "../hooks/useEmailBroadcast";
 
 const EventForm = () => {
     const [tit, setTit] = useState("");
@@ -11,6 +12,7 @@ const EventForm = () => {
     const [contests, setContests] = useState([]);
     const [teamName, setTeamName] = useState("");
     const [loading, setLoading] = useState(false);
+    const {emailBroadcast} = useEmailBroadcast();
 
     const user = JSON.parse(localStorage.getItem("user"));
     const token = user?.tokene || null;
@@ -126,6 +128,8 @@ const EventForm = () => {
     
             if (response.ok) {
                 alert("Event created successfully!");
+                // email broadcasting logic here
+                emailBroadcast(formData);
                 setTit("");
                 setDesc("");
                 setDeadline("");
@@ -133,6 +137,7 @@ const EventForm = () => {
                 setAnnouncementType("normal");
                 setSelectedEvent("");
                 setTeamNames([""]);
+
             } else {
                 const errorData = await response.json();
                 alert(`Submission failed: ${errorData.error}`);

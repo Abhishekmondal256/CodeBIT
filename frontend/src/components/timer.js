@@ -1,54 +1,61 @@
 import React, { useState, useEffect } from "react";
 
-export const RegTimer = ({deadline,compName}) => {
-   
+export const RegTimer = ({ deadline, compName }) => {
     const [days, setDays] = useState(0);
     const [hours, setHours] = useState(0);
     const [minutes, setMinutes] = useState(0);
     const [seconds, setSeconds] = useState(0);
 
-
-    
+    // Dummy function
+    const contestFunction = () => {
+        console.log("dummy function call");
+    };
 
     const getTime = (deadline) => {
         const time = Date.parse(deadline) - Date.now();
         setDays(Math.floor(time / (1000 * 60 * 60 * 24)));
-        setHours(Math.floor(time / (1000 * 60 * 60) % 24));
-        setMinutes(Math.floor(time / (1000 * 60) % 60));
-        setSeconds(Math.floor(time / (1000) % 60));
+        setHours(Math.floor((time / (1000 * 60 * 60)) % 24));
+        setMinutes(Math.floor((time / (1000 * 60)) % 60));
+        setSeconds(Math.floor((time / 1000) % 60));
+
+        // Check for the exact 30-minute mark
+        if (days === 0 && hours === 0 && minutes === 30 && seconds === 0 && compName === "contest") {
+            contestFunction();
+        }
     };
+
     useEffect(() => {
         const interval = setInterval(() => getTime(deadline), 1000);
         return () => clearInterval(interval);
-    }, [deadline]);
+    }, [deadline]); // Include compName as a dependency
+
     return (
         <div className="text-[15px] text-[#0DB256]">
-            {(days <= 1 && days >= 0) ? (
+            {(days < 1 && days >= 0) ? (
                 <div className="flex">
-                    <p>{hours}:</p>
-                    <p>{minutes}:</p>
-                    <p>{seconds}</p>
+                    <p>{hours.toString().padStart(2, '0')}:</p>
+                    <p>{minutes.toString().padStart(2, '0')}:</p>
+                    <p>{seconds.toString().padStart(2, '0')}</p>
                 </div>
             ) : ((days < 5 && days > 0) ? (
                 <div className="flex justify-center items-center ">
                     <p>{days}d</p>
-                    <p>{hours}h</p>
-                    <p>{minutes}m</p>
-                    <p>{seconds}s</p>
-
+                    <p>{hours.toString().padStart(2, '0')}h</p>
+                    <p>{minutes.toString().padStart(2, '0')}m</p>
+                    <p>{seconds.toString().padStart(2, '0')}s</p>
                 </div>
             ) : ((days > 0) ? (
                 <div>{days}days</div>
             ) : (
                 <div></div>
             )
-            ))
-            }
-        </div >
+            ))}
+        </div>
     );
 };
 
-export const RunningTimer = ({deadline}) => {
+
+export const RunningTimer = ({ deadline }) => {
     const [hours, setHours] = useState(0);
     const [minutes, setMinutes] = useState(0);
     const [seconds, setSeconds] = useState(0);
@@ -67,9 +74,9 @@ export const RunningTimer = ({deadline}) => {
         <div className="text-sm text-[#0DB256]">
             {(hours < 3 && hours >= 0) ? (
                 <div className="flex">
-                    <p>{hours}:</p>
-                    <p>{minutes}:</p>
-                    <p>{seconds}</p>
+                    <p>{hours.toString().padStart(2, '0')}h</p>
+                    <p>{minutes.toString().padStart(2, '0')}m</p>
+                    <p>{seconds.toString().padStart(2, '0')}s</p>
                 </div>
             ) : (
                 <div></div>

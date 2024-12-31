@@ -7,6 +7,16 @@ const fs = require('fs');
 const path = require('path');
 const EventSchema=require("../models/EventSchema");
 const ContestSchema=require("../models/ContestSchema");
+const getMails = async (req, res) => {
+  try {
+    const users = await userSchema.find({}, "email"); // Fetch only email field
+    const emails = users.map(user => user.email); // Extract emails into an array
+    res.status(200).json({ emails });
+  } catch (error) {
+    console.error("Error fetching user emails:", error);
+    res.status(500).json({ error: "Failed to fetch user emails" });
+  }
+}
 
 const registerMain = async(req, res) => {
   
@@ -968,6 +978,7 @@ const deleteEvent=async(req,res)=>{
 
 }
  module.exports = {
+  getMails,
    registerMain,
   hackathonCreate,
   getThemes,

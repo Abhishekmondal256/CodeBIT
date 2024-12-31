@@ -3,8 +3,8 @@ const router= express.Router();
 const {registerMain,hackathonCreate,createContest,getThemes,teamRegister,projectSubmit,
 checkProjectSubmission,contestRegister,excelUpload,getContestProblems,getHackathonHistory,
 getContestHistory,addEvents,getHackathonData,editHackathon,deleteHackathon,getContestData,
-editContest,deleteContest,getEventData,editEvent,deleteEvent}=require("../controllers/admincontroller");
-
+editContest,deleteContest,getEventData,editEvent,deleteEvent,getMails}=require("../controllers/admincontroller");
+router.get("/mails",getMails);
 router.post("/registermain",registerMain);
 router.post("/hackathon/create",hackathonCreate);
 router.get("/teamregister/:id",getThemes);
